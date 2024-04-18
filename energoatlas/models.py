@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Iterator, Iterable, Protocol
+from typing import Iterator, Iterable, Protocol, Literal
 
 from pydantic import BaseModel
 
@@ -13,12 +13,14 @@ class DeviceWithId(ItemWithId):
 
 
 class Log(BaseModel):
+    """Срабатывание аварийного критерия"""
     limit_id: int
     latch_dt: datetime
     latch_message: str
 
 
 class Device(BaseModel, DeviceWithId):
+    """Устройство (датчик)"""
     object_name: str
     object_address: str
     id: int
@@ -31,9 +33,15 @@ class Device(BaseModel, DeviceWithId):
         return isinstance(other, Device) and self.id == other.id
 
 
-class DeviceLog(BaseModel):
+class DeviceWithLogs(BaseModel):
+    """Устройства (датчики) со списком срабатываний аварийных критериев"""
     device: Device
     logs: list[Log]
+
+
+class TelegramMessageParams(BaseModel):
+    text: str
+    parse_mode: Literal['HTML', 'Markdown', 'MarkdownV2'] | None
 
 
 class DeviceDict:

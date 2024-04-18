@@ -13,7 +13,9 @@ class Settings(BaseSettings):
 
     base_url: str = 'http://stub:8888'
 
-    token: str = ''
+    token: str = 'specify-your-token'
+    telegram_api_base: str = 'https://api.telegram.org/bot'
+    telegram_api_url: str = f'{telegram_api_base}{token}'
 
 
 settings = Settings(

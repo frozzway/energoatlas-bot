@@ -15,11 +15,11 @@ class UserManager(DbBaseManager):
         super().__init__(engine=engine, session=session)
         self.api_manager = api_manager
 
-    @database_call()
+    @database_call
     async def get_all_users(self) -> ScalarResult[UserTable]:
         return await self.session.scalars(select(UserTable))
 
-    @database_call()
+    @database_call
     async def set_devices_for_user(self, user: UserTable, devices: Iterable[DeviceWithId]):
         """Установить пользователю относящиеся к нему устройства"""
         await self.session.execute(delete(UserDeviceTable).where(UserDeviceTable.telegram_user_id == user.telegram_user_id))
