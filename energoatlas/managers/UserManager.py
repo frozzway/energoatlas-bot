@@ -2,7 +2,7 @@ import asyncio
 from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
-from sqlalchemy import select, delete, ScalarResult
+from sqlalchemy import select, delete
 
 from energoatlas.tables import UserTable, UserDeviceTable
 from energoatlas.models import DeviceWithId
@@ -16,8 +16,9 @@ class UserManager(DbBaseManager):
         self.api_manager = api_manager
 
     @database_call
-    async def get_all_users(self) -> ScalarResult[UserTable]:
-        return await self.session.scalars(select(UserTable))
+    async def get_all_users(self) -> list[UserTable]:
+        users = await self.session.scalars(select(UserTable))
+        return list(users)
 
     @database_call
     async def set_devices_for_user(self, user: UserTable, devices: Iterable[DeviceWithId]):

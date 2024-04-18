@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     telegram_api_base: str = 'https://api.telegram.org/bot'
     telegram_api_url: str = f'{telegram_api_base}{token}'
 
+    admin_login: str = ''
+    admin_password: str = ''
+
 
 settings = Settings(
     _env_file='.env',

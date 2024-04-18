@@ -4,17 +4,18 @@ from typing import Iterable
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, func
 
-from energoatlas.models import DeviceWithLogs, DeviceDict, Device, Log
+from energoatlas.models import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
 from energoatlas.managers import ApiManager, DbBaseManager
 from energoatlas.utils import database_call, yesterday
+from energoatlas.settings import settings
 
 
 class LogManager(DbBaseManager):
     def __init__(self, api_manager: ApiManager, engine: AsyncEngine = None, session: AsyncSession = None):
         super().__init__(engine=engine, session=session)
         self.api_manager = api_manager
-        self.admin_user = UserTable(login='', password='')
+        self.admin_user = UserTable(login=settings.admin_login, password=settings.admin_password)
 
     async def request_logs_and_notify(self):
         """Запросить логи срабатываний аварийных критериев устройств за последние два дня из API Энергоатлас и отправить
@@ -104,12 +105,12 @@ class LogManager(DbBaseManager):
                 if user_id not in user_devices:
                     user_devices[user_id] = []
                 user_devices[user_id].append(unit)
-        futures = [self._notify_telegram_user(id_, device) for id_, device in user_devices.items()]
+        futures = [self._send_notification_in_chat(id_, device) for id_, device in user_devices.items()]
         await asyncio.gather(*futures)
 
-    async def _notify_telegram_user(self, chat_id: int, device_logs: list[DeviceWithLogs]) -> None:
-        """Уведомить одного пользователя в Telegram о срабатывании аварийных критериев на устройствах
-        :param chat_id: идентификатор чата пользователя
+    async def _send_notification_in_chat(self, chat_id: int, device_logs: list[DeviceWithLogs]) -> None:
+        """Отправить уведомление в один чат Telegram о срабатывании аварийных критериев на устройствах
+        :param chat_id: идентификатор чата
         :param device_logs: устройства (датчики) со списком срабатываний аварийных критериев
         """
         message_params = {}  # TODO: Класс собирающий сообщения
