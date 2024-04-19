@@ -4,15 +4,15 @@ from aiogram import Dispatcher, Bot, Router
 from aioshedule import Scheduler
 
 from energoatlas.dependencies import http_client
-from energoatlas.aiogram.middlewares import TokenValidationMiddleware
+from energoatlas.aiogram.middlewares import AuthValidationMiddleware
 from energoatlas.settings import settings
 from energoatlas.managers import UserManager, LogManager, ApiManager
 
 
 router = Router(name=__name__)
 
-router.callback_query.outer_middleware(TokenValidationMiddleware())
-router.message.outer_middleware(TokenValidationMiddleware())
+router.callback_query.outer_middleware(AuthValidationMiddleware())
+router.message.outer_middleware(AuthValidationMiddleware())
 
 bot = Bot(token=settings.token)
 
@@ -20,8 +20,9 @@ bot = Bot(token=settings.token)
 async def on_startup(dispatcher: Dispatcher):
     client = await anext(http_client())
     api_manager = ApiManager(client)
+    user_manager = UserManager(api_manager)
     await asyncio.create_task(run_scheduled_tasks(api_manager))
-    await dispatcher.start_polling(bot, api_manager=api_manager)
+    await dispatcher.start_polling(bot, api_manager=api_manager, user_manager=user_manager)
 
 
 async def run_scheduled_tasks(api_manager: ApiManager):

@@ -84,7 +84,7 @@ class ApiManager:
         response.raise_for_status()
 
     @api_call(handle_errors=True)
-    async def get_user_companies(self, token: str) -> list[Company] | None:
+    async def get_user_companies(self, token: str) -> list[Company]:
         """Получить список компаний, к которым отнесен пользователь
         :param token: Личный токен авторизации пользователя
         """
@@ -97,12 +97,15 @@ class ApiManager:
 
     @api_call(handle_errors=True)
     async def get_company_objects(self, company_id: int, token: str) -> list[Object] | None:
-        """Получить список объектов одной компании
+        """Получить список объектов одной компании. Возвращает `None` при отсутствии прав
         :param company_id: идентификатор компании
         :param token: Личный токен авторизации пользователя
         """
         response = await self.client.get(f'{settings.base_url}/api2/company/objects?id={company_id}',
                                          headers={'Authorization': f'Bearer {token}'})
+
+        if response.status_code == 403:
+            return None
 
         response.raise_for_status()
 
@@ -110,25 +113,31 @@ class ApiManager:
 
     @api_call(handle_errors=True)
     async def get_object_devices(self, object_id: int, token: str) -> list[Device] | None:
-        """Получить список устройств на объекте
+        """Получить список устройств на объекте. Возвращает `None` при отсутствии прав
         :param object_id: идентификатор объекта
         :param token: Личный токен авторизации пользователя
         """
         response = await self.client.get(f'{settings.base_url}/api2/object?id={object_id}',
                                          headers={'Authorization': f'Bearer {token}'})
 
+        if response.status_code == 403:
+            return None
+
         response.raise_for_status()
 
         return [Device(**data) for data in response.json()]
 
     @api_call(handle_errors=True)
-    async def get_device_status(self, device_id: int, token: str) -> list[Parameter]:
-        """Получить текущую информацию об устройстве
+    async def get_device_status(self, device_id: int, token: str) -> list[Parameter] | None:
+        """Получить текущую информацию о параметрах устройства. Возвращает `None` при отсутствии прав
         :param device_id: Идентификатор устройства
         :param token: Личный токен авторизации пользователя
         """
         response = await self.client.get(f'{settings.base_url}/api2/device/values?id={device_id}',
                                          headers={'Authorization': f'Bearer {token}'})
+
+        if response.status_code == 403:
+            return None
 
         response.raise_for_status()
 

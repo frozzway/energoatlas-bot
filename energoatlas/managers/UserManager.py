@@ -16,12 +16,19 @@ class UserManager(DbBaseManager):
         self.api_manager = api_manager
 
     @database_call
-    async def get_all_users(self) -> list[UserTable]:
+    async def get_user_credentials(self, telegram_id: int) -> tuple[str, str] | None:
+        statement = select(UserTable).where(UserTable.telegram_user_id == telegram_id)
+        user = await self.session.scalar(statement)
+        if user:
+            return user.login, user.password
+
+    @database_call
+    async def _get_all_users(self) -> list[UserTable]:
         users = await self.session.scalars(select(UserTable))
         return list(users)
 
     @database_call
-    async def set_devices_for_user(self, user: UserTable, devices: Iterable[DeviceWithId]):
+    async def _set_devices_for_user(self, user: UserTable, devices: Iterable[DeviceWithId]):
         """Установить пользователю относящиеся к нему устройства"""
         await self.session.execute(delete(UserDeviceTable).where(UserDeviceTable.telegram_user_id == user.telegram_user_id))
         user.devices.add_all((UserDeviceTable(device_id=device.id) for device in devices))
@@ -30,15 +37,15 @@ class UserManager(DbBaseManager):
     async def update_all_users(self) -> None:
         """Обновить информацию по всем ранее авторизованным пользователям об относящихся к ним устройствах"""
         await self.refresh_session()
-        users = await self.get_all_users()
-        futures = [self.update_user(user) for user in users]
+        users = await self._get_all_users()
+        futures = [self._update_user(user) for user in users]
         await asyncio.gather(*futures)
 
-    async def update_user(self, user: UserTable) -> None:
+    async def _update_user(self, user: UserTable) -> None:
         """Обновить информацию об относящихся к пользователю устройствах"""
         if token := await self.api_manager.get_auth_token(user.login, user.password):
             devices = await self.api_manager.get_user_devices(token)
-            await self.set_devices_for_user(user, devices)
+            await self._set_devices_for_user(user, devices)
         else:
             # TODO: Отправить сообщение пользователю о необходимости повторной авторизации в боте
             pass

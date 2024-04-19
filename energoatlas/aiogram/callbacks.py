@@ -18,4 +18,5 @@ class DevicesForm(CallbackData, prefix='devices_list'):
 
 
 class DeviceView(CallbackData, prefix='device_view'):
+    object_id: int
     device_id: int
