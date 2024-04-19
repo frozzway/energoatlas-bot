@@ -1,6 +1,7 @@
 import asyncio
 from typing import Iterable
 
+from aiogram import Bot, Dispatcher
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, delete
 
@@ -11,9 +12,12 @@ from energoatlas.utils import database_call
 
 
 class UserManager(DbBaseManager):
-    def __init__(self, api_manager: ApiManager, engine: AsyncEngine = None, session: AsyncSession = None):
+    def __init__(self, api_manager: ApiManager, engine: AsyncEngine = None, session: AsyncSession = None,
+                 bot: Bot = None, dispatcher: Dispatcher = None):
         super().__init__(engine=engine, session=session)
         self.api_manager = api_manager
+        self.bot = bot
+        self.dispatcher = dispatcher
 
     @database_call
     async def get_user_credentials(self, telegram_id: int) -> tuple[str, str] | None:
@@ -47,5 +51,7 @@ class UserManager(DbBaseManager):
             devices = await self.api_manager.get_user_devices(token)
             await self._set_devices_for_user(user, devices)
         else:
+            state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=user.telegram_user_id, user_id=user.telegram_user_id)
+            state.clear()
             # TODO: Отправить сообщение пользователю о необходимости повторной авторизации в боте
             pass
