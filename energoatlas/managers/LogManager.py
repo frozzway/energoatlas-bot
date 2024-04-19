@@ -21,7 +21,7 @@ class LogManager(DbBaseManager):
         """Запросить логи срабатываний аварийных критериев устройств за последние два дня из API Энергоатлас и отправить
         уведомления о неизвещенных срабатываниях подписанным на эти устройства пользователям в личные чаты Telegram"""
         await self.refresh_session()
-        if token := await self.api_manager.get_auth_token(self.admin_user):
+        if token := await self.api_manager.get_auth_token(self.admin_user.login, self.admin_user.password):
             tracked_devices = await self._get_tracked_devices(token)
             devices_logs = await self._get_devices_logs(DeviceDict(tracked_devices), token)
             notified_logs = await self.get_notified_logs()
@@ -75,7 +75,7 @@ class LogManager(DbBaseManager):
             device_id, logs = await future
             vm = DeviceWithLogs()
             vm.device = devices.get_device(device_id)
-            vm.logs = logs
+            vm.logs = logs  # TODO: Отфильтровать аварийные критерии на интересующие заказчика
             result.append(vm)
         return result
 

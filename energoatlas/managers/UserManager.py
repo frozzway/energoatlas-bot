@@ -36,7 +36,7 @@ class UserManager(DbBaseManager):
 
     async def update_user(self, user: UserTable) -> None:
         """Обновить информацию об относящихся к пользователю устройствах"""
-        if token := await self.api_manager.get_auth_token(user):
+        if token := await self.api_manager.get_auth_token(user.login, user.password):
             devices = await self.api_manager.get_user_devices(token)
             await self.set_devices_for_user(user, devices)
         else:
