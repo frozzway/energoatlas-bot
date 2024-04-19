@@ -33,6 +33,7 @@ class AuthValidationMiddleware(BaseMiddleware):
             else:
                 data['auth_token'] = token
         else:
+            await user_manager.refresh_session()
             if credentials := await user_manager.get_user_credentials(event.from_user.id):
                 login, password = credentials
                 if token := await api_manager.get_auth_token(login, password):
