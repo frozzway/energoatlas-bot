@@ -69,7 +69,7 @@ async def render_objects_list(query: CallbackQuery, callback_data: ObjectsForm, 
                                   auth_token=auth_token, api_manager=api_manager)
 
     keyboard = InlineKeyboardBuilder()
-    for item in objects:
+    for item in objects:  # TODO: Тут нужна пагинация
         text = (f'{item.name}\n'
                 f'{item.address}')
         keyboard.button(text=text, callback_data=DevicesForm(object_id=item.id))
@@ -82,13 +82,11 @@ async def render_objects_list(query: CallbackQuery, callback_data: ObjectsForm, 
 @router.callback_query(Auth.authorized, DevicesForm.filter())
 async def render_devices_list(query: CallbackQuery, callback_data: DevicesForm, state: FSMContext, auth_token: str, api_manager: ApiManager):
     """Отобразить список устройств выбранного объекта"""
-    await state.update_data(current_object=callback_data.object_id)
-    state_data = await state.get_data()
-
     object_id = callback_data.object_id
     devices = await api_manager.get_object_devices(object_id, auth_token)
 
     if devices is None:
+        state_data = await state.get_data()
         if company_id := state_data.get('current_company'):
             await render_objects_list(query=query, callback_data=ObjectsForm(company_id=company_id), state=state,
                                       auth_token=auth_token, api_manager=api_manager)
@@ -110,7 +108,6 @@ async def render_devices_list(query: CallbackQuery, callback_data: DevicesForm, 
 @router.callback_query(Auth.authorized, DeviceView.filter())
 async def render_device_view(query: CallbackQuery, callback_data: DeviceView, auth_token: str, api_manager: ApiManager):
     """Отобразить параметры выбранного устройства"""
-
     device_params = await api_manager.get_device_status(callback_data.device_id, auth_token)
 
     text = '\n'.join(repr(p) for p in device_params)
