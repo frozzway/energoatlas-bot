@@ -15,6 +15,7 @@ class ObjectsForm(CallbackData, prefix='objects_list'):
 
 class DevicesForm(CallbackData, prefix='devices_list'):
     object_id: int
+    company_id: int
 
 
 class DeviceView(CallbackData, prefix='device_view'):
