@@ -104,7 +104,6 @@ async def render_devices_list(
     """Отобразить список устройств выбранного объекта"""
     object_id = callback_data.object_id
     devices = await api_manager.get_object_devices(object_id, auth_token)
-
     on_error_callback = ObjectsForm(company_id=callback_data.company_id)
     on_api_error = render_objects_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager,
                                        callback_data=on_error_callback)
@@ -134,7 +133,6 @@ async def render_device_view(
 ):
     """Отобразить параметры выбранного устройства"""
     device_params = await api_manager.get_device_status(callback_data.device_id, auth_token)
-
     on_error_callback = ObjectsForm(company_id=callback_data.company_id)
     on_api_error = render_objects_list(query=query, state=state, callback_data=on_error_callback, auth_token=auth_token,
                                        api_manager=api_manager)
