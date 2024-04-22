@@ -1,4 +1,6 @@
 import asyncio
+import traceback
+from typing import Coroutine
 
 from aiogram import Dispatcher, Bot, Router
 from aiogram_extensions.paginator import router as paginator_router
@@ -38,8 +40,16 @@ async def run_scheduled_tasks(api_manager: ApiManager):
     schedule.every().minute.do(log_manager.request_logs_and_notify)
 
     while True:
-        await schedule.run_pending()
+        await log_exceptions(schedule.run_pending())
         await asyncio.sleep(1)
+
+
+async def log_exceptions(action: Coroutine):
+    try:
+        await action
+    except Exception as e:
+        print("Произошла ошибка:", e)
+        traceback.print_exc()
 
 
 async def main():
