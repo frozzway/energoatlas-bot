@@ -21,10 +21,18 @@ class UserManager(DbBaseManager):
 
     @database_call
     async def get_user_credentials(self, telegram_id: int) -> tuple[str, str] | None:
+        """Получить учетные данные для авторизации в API Энергоатлас из базы данных"""
         statement = select(UserTable).where(UserTable.telegram_user_id == telegram_id)
         user = await self.session.scalar(statement)
         if user:
             return user.login, user.password
+
+    @database_call
+    async def remove_user(self, telegram_id: int) -> None:
+        """Удалить учетные данные для авторизации в API Энергоатлас из базы данных"""
+        statement = delete(UserTable).where(UserTable.telegram_user_id == telegram_id)
+        await self.session.execute(statement)
+        await self.session.commit()
 
     @database_call
     async def _get_all_users(self) -> list[UserTable]:

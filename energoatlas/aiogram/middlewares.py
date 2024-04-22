@@ -31,7 +31,8 @@ class AuthValidationMiddleware(BaseMiddleware):
             token = await get_auth_token(state, api_manager)
             if token == '':
                 await state.clear()
-                # TODO: Убрать из БД
+                await user_manager.refresh_session()
+                await user_manager.remove_user(event.from_user.id)
             elif token is None:
                 return await event.answer(text='Произошла ошибка обработки запроса к API Энергоатлас. Попробуйте повторить запрос позже.')
             else:
