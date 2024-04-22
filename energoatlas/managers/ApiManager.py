@@ -38,7 +38,7 @@ class ApiManager:
         """Проверить возможность авторизации в системе по ранее предоставленному логину и паролю от пользователя
         :param login: логин пользователя
         :param password: пароль пользователя
-        :return: личный токен авторизации пользователя при успешной авторизации
+        :return: личный токен авторизации пользователя при успешной авторизации или пустая строка при неверных данных
         """
         response = await self.client.post(f'{settings.base_url}/api2/auth/open', json={
             'login': login,
@@ -46,7 +46,7 @@ class ApiManager:
         })
 
         if response.status_code == 401:
-            return None
+            return ''
 
         response.raise_for_status()
 
@@ -84,7 +84,7 @@ class ApiManager:
         response.raise_for_status()
 
     @api_call(handle_errors=True)
-    async def get_user_companies(self, token: str) -> list[Company]:
+    async def get_user_companies(self, token: str) -> list[Company] | None:
         """Получить список компаний, к которым отнесен пользователь
         :param token: Личный токен авторизации пользователя
         """

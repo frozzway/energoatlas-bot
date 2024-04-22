@@ -1,18 +1,21 @@
 import asyncio
 
 from aiogram import Dispatcher, Bot, Router
+from aiogram_extensions.paginator import router as paginator_router
 from aioshedule import Scheduler
 
 from energoatlas.dependencies import http_client
-from energoatlas.aiogram.middlewares import AuthValidationMiddleware
+from energoatlas.aiogram.middlewares import AuthValidationMiddleware, ApiErrorHandlerMiddleware
 from energoatlas.settings import settings
 from energoatlas.managers import UserManager, LogManager, ApiManager
 
 
 router = Router(name=__name__)
+router.include_router(paginator_router)
 
-router.callback_query.outer_middleware(AuthValidationMiddleware())
 router.message.outer_middleware(AuthValidationMiddleware())
+router.callback_query.outer_middleware(AuthValidationMiddleware())
+router.callback_query.middleware(ApiErrorHandlerMiddleware())
 
 bot = Bot(token=settings.token)
 
