@@ -25,9 +25,8 @@ bot = Bot(token=settings.bot_token)
 async def on_startup(dispatcher: Dispatcher):
     client = await anext(http_client())
     api_manager = ApiManager(client)
-    user_manager = UserManager(api_manager)
     await asyncio.create_task(run_scheduled_tasks(api_manager))
-    await dispatcher.start_polling(bot, api_manager=api_manager, user_manager=user_manager)
+    await dispatcher.start_polling(bot, api_manager=api_manager)
 
 
 async def run_scheduled_tasks(api_manager: ApiManager):

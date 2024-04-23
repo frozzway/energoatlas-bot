@@ -25,14 +25,14 @@ class AuthValidationMiddleware(BaseMiddleware):
         data: dict[str, Any]
     ) -> Any:
         api_manager: ApiManager = data['api_manager']
-        user_manager: UserManager = data['user_manager']
         state: FSMContext = data['state']
+        user_manager = UserManager(api_manager)
+        data['user_manager'] = user_manager
 
         if await state.get_state() is Auth.authorized:
             token = await get_auth_token(state, api_manager)
             if token == '':
                 await state.clear()
-                await user_manager.refresh_session()
                 await user_manager.remove_user(event.from_user.id)
                 await SendMessage(chat_id=event.from_user.id, text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
             elif token is None:
@@ -40,7 +40,6 @@ class AuthValidationMiddleware(BaseMiddleware):
             else:
                 data['auth_token'] = token
         else:
-            await user_manager.refresh_session()
             if credentials := await user_manager.get_user_credentials(event.from_user.id):
                 login, password = credentials
                 if token := await api_manager.get_auth_token(login, password):
