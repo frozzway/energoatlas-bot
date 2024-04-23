@@ -126,7 +126,7 @@ class ApiManager:
 
         response.raise_for_status()
 
-        return [Device(**data) for data in response.json()]
+        return [Device(**data) for data in response.json()['devices']]
 
     @api_call(handle_errors=True)
     async def get_device_status(self, device_id: int, token: str) -> list[Parameter] | None:
