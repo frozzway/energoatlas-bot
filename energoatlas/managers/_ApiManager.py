@@ -4,8 +4,9 @@ import httpx
 
 from energoatlas.settings import settings
 from energoatlas.utils import yesterday, api_call
-from energoatlas.models import Log, Device, TelegramMessageParams
-from energoatlas.aiogram.models import Company, Object, Device, Parameter
+from energoatlas.models import Device as DeviceObject
+from energoatlas.models import Log, TelegramMessageParams
+from energoatlas.aiogram.models import Company, Object, Parameter, Device
 
 
 class ApiManager:
@@ -13,7 +14,7 @@ class ApiManager:
         self.client = client
 
     @api_call(handle_errors=True)
-    async def get_user_devices(self, token: str) -> set[Device] | None:
+    async def get_user_devices(self, token: str) -> set[DeviceObject] | None:
         """Получить идентификаторы устройств, относящихся к пользователю
         :param token: Личный токен авторизации пользователя
         :return: Идентификаторы устройств или объект None при неуспешной авторизации (с выводом в лог)
@@ -25,9 +26,9 @@ class ApiManager:
         objects = response.json()
         for obj in objects:
             for device in obj['devices']:
-                instance = Device()
-                instance.object_name = obj['name']
-                instance.object_address = obj['address']
+                instance = DeviceObject()
+                instance.obj_name = obj['name']
+                instance.obj_address = obj['address']
                 instance.name = device['name']
                 instance.id = device['id']
                 devices.add(instance)
