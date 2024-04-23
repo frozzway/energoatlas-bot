@@ -22,7 +22,7 @@ class PaginatedKeyboard:
         self.post = post
         self.state = state
         self.page_size = page_size
-        self.keyboard_id = secrets.token_hex(32)
+        self.keyboard_id = secrets.token_hex(16)
         self.items = self.keyboard.export()
 
         loop = asyncio.get_event_loop()
@@ -43,8 +43,8 @@ class PaginatedKeyboard:
     def _get_navigation_buttons(self, page: int) -> list[InlineKeyboardButton]:
         previous_button = InlineKeyboardButton(text="⬅️", callback_data=Page(keyboard_id=self.keyboard_id, page=page-1).pack())
         next_button = InlineKeyboardButton(text="➡️", callback_data=Page(keyboard_id=self.keyboard_id, page=page+1).pack())
-        nav_stub = InlineKeyboardButton(text='❌')
-        current_page = InlineKeyboardButton(text=f'Страница {page}')
+        nav_stub = InlineKeyboardButton(text='❌', callback_data='none')
+        current_page = InlineKeyboardButton(text=f'Страница {page}', callback_data='none')
 
         last_page_index = page * self.page_size
         if last_page_index >= len(self.items):
