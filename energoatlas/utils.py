@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import logging
+import re
 from datetime import datetime
 from typing import TypeVar
 from zoneinfo import ZoneInfo
@@ -24,10 +25,13 @@ def yesterday() -> datetime:
     return now.replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(days=1)
 
 
+def strip_log(message: str) -> str:
+    return re.search(r"[^(]*", message).group().strip()
+
+
 def api_call(handle_errors: bool = False, log_level=logging.WARNING, target_api_prefix='Энергоатлас API',
              telegram_call=False):
-    """
-    Декоратор для асинхронных атомарных методов, выполняющих запросы к API "Энергоатлас" / Telegram. Ограничивает количество
+    """Декоратор для асинхронных атомарных методов, выполняющих запросы к API "Энергоатлас" / Telegram. Ограничивает количество
     одновременных запросов в соответствии со значением семафора и логирующий Http-исключения и ответы с кодом 4хх-5хх.
     :param handle_errors: писать информацию в лог, при выброшенном исключении, подменяя возвращаемое значение метода на None
     :param log_level: уровень логов

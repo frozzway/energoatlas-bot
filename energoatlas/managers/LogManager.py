@@ -7,7 +7,7 @@ from sqlalchemy import select, func
 from energoatlas.models import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
 from energoatlas.managers import ApiManager, DbBaseManager
-from energoatlas.utils import database_call, yesterday
+from energoatlas.utils import database_call, yesterday, strip_log
 from energoatlas.settings import settings
 
 
@@ -30,8 +30,7 @@ class LogManager(DbBaseManager):
 
     @database_call
     async def get_subscribed_telegram_ids(self, device_ids: Iterable[int]) -> dict[int, list[int]]:
-        """
-        Получить по каждому из устройств идентификаторы пользователей в telegram, куда отправлять уведомления о
+        """Получить по каждому из устройств идентификаторы пользователей в telegram, куда отправлять уведомления о
         срабатывании аварийных критериев
         :param device_ids: список идентификаторов устройств
         """
@@ -56,13 +55,13 @@ class LogManager(DbBaseManager):
 
     @database_call
     async def _get_tracked_devices_ids(self) -> list[int]:
+        """Получить идентификаторы устройств, по которым проверяется история срабатываний аварийных критериев"""
         statement = select(UserDeviceTable.device_id).distinct()
         result = await self.session.scalars(statement)
         return list(result)
 
     async def _get_devices_logs(self, devices: DeviceDict, token: str) -> list[DeviceWithLogs]:
-        """
-        Получить историю срабатывания аварийных критериев на устройствах из системы "Энергоатлас" за последние два дня
+        """Получить историю срабатывания аварийных критериев на устройствах из системы "Энергоатлас" за последние два дня
         конкурентно
         :param devices: список устройств, чьи истории запрашиваются.
         :param token: токен авторизации пользователя, у которого есть доступ на получение истории по переданным
@@ -75,7 +74,7 @@ class LogManager(DbBaseManager):
             device_id, logs = await future
             vm = DeviceWithLogs()
             vm.device = devices.get_device(device_id)
-            vm.logs = logs  # TODO: Отфильтровать аварийные критерии на интересующие заказчика
+            vm.logs = [log for log in logs if strip_log(log.latch_message) in settings.targeted_logs]
             result.append(vm)
         return result
 
@@ -119,6 +118,7 @@ class LogManager(DbBaseManager):
         # TODO: обработать ответ на отсутствие прав отправки пользователю сообщения?
 
     async def _get_tracked_devices(self, token: str) -> set[Device]:
+        """Получить набор объектов Device, по которым проверяется история срабатываний аварийных критериев"""
         all_devices = await self.api_manager.get_user_devices(token)
         tracked_devices_ids = await self._get_tracked_devices_ids()
         return set(device for device in all_devices if device.id in tracked_devices_ids)
