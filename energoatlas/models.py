@@ -14,6 +14,12 @@ class Log(BaseModel):
     latch_dt: datetime
     latch_message: str
 
+    def __hash__(self):
+        return hash((self.limit_id, self.latch_dt))
+
+    def __eq__(self, other):
+        return (self.limit_id, self.latch_dt) == (other.limit_id, other.latch_dt)
+
 
 class Device(BaseModel):
     """Устройство (датчик)"""
