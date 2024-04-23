@@ -2,6 +2,7 @@ import asyncio
 from typing import Iterable
 
 from aiogram import Bot, Dispatcher
+from aiogram.methods import SendMessage
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, delete
 
@@ -60,6 +61,6 @@ class UserManager(DbBaseManager):
             await self._set_devices_for_user(user, devices)
         else:
             state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=user.telegram_user_id, user_id=user.telegram_user_id)
-            state.clear()
-            # TODO: Отправить сообщение пользователю о необходимости повторной авторизации в боте
-            pass
+            await state.clear()
+            await SendMessage(chat_id=user.telegram_user_id, text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+            await self.remove_user(user.telegram_user_id)

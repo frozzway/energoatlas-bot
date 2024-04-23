@@ -2,6 +2,7 @@ from typing import Callable, Any, Awaitable
 
 from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
+from aiogram.methods import SendMessage
 from aiogram.types import Message, CallbackQuery
 
 from energoatlas.aiogram.states import Auth
@@ -33,6 +34,7 @@ class AuthValidationMiddleware(BaseMiddleware):
                 await state.clear()
                 await user_manager.refresh_session()
                 await user_manager.remove_user(event.from_user.id)
+                await SendMessage(chat_id=event.from_user.id, text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
             elif token is None:
                 return await event.answer(text='Произошла ошибка обработки запроса к API Энергоатлас. Попробуйте повторить запрос позже.')
             else:
