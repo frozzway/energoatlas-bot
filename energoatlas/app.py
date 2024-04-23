@@ -7,6 +7,7 @@ from aiogram_extensions.paginator import router as paginator_router
 from aioshedule import Scheduler
 
 from energoatlas.dependencies import http_client
+from energoatlas.aiogram import router as app_router
 from energoatlas.aiogram.middlewares import AuthValidationMiddleware, ApiErrorHandlerMiddleware
 from energoatlas.settings import settings
 from energoatlas.managers import UserManager, LogManager, ApiManager
@@ -14,6 +15,7 @@ from energoatlas.managers import UserManager, LogManager, ApiManager
 
 router = Router(name=__name__)
 router.include_router(paginator_router)
+router.include_router(app_router)
 
 router.message.outer_middleware(AuthValidationMiddleware())
 router.callback_query.outer_middleware(AuthValidationMiddleware())
@@ -53,6 +55,7 @@ async def log_exceptions(action: Coroutine):
 
 async def main():
     dispatcher = Dispatcher()
+    dispatcher.include_router(router)
     await on_startup(dispatcher)
 
 

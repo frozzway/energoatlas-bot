@@ -1,16 +1,19 @@
+from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from energoatlas.app import router
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.handlers import render_main_menu
 from energoatlas.managers import ApiManager, UserManager
 
 
+router = Router(name='auth')
+
+
 @router.message(CommandStart())
 async def request_email(message: Message, state: FSMContext):
-    if state.get_state() is Auth.authorized:
+    if await state.get_state() is Auth.authorized:
         return await render_main_menu(message)
     await state.set_state(Auth.email_requested)
     await message.answer('Введите Email от учетной записи в Энергоатлас')
@@ -44,3 +47,5 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
         await message.answer('Данные для входа неверны. Повторите попытку /start')
     else:
         await message.answer('Произошла ошибка обработки запроса к API Энергоатлас. Сервис временно недоступен. Повторите попытку позже /start')
+
+    await state.clear()

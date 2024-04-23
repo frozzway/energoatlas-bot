@@ -1,5 +1,5 @@
 import asyncio
 
-from app import main
+from energoatlas.app import main
 
 asyncio.run(main())

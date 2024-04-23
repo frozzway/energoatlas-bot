@@ -1,3 +1,4 @@
+from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
@@ -12,8 +13,10 @@ from energoatlas.app import router
 from energoatlas.managers import ApiManager
 from energoatlas.settings import settings
 
+
 main_menu = InlineKeyboardBuilder()
 main_menu.button(text='Главное меню', callback_data=MainMenu())
+router = Router(name='main')
 
 
 @router.message(Auth.authorized, Command('menu'))

@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, delete
 
 from energoatlas.tables import UserTable, UserDeviceTable
-from energoatlas.models import DeviceWithId
-from energoatlas.managers import ApiManager, DbBaseManager
 from energoatlas.models import ItemWithId
+from energoatlas.managers._ApiManager import ApiManager
+from energoatlas.managers._DbBaseManager import DbBaseManager
 from energoatlas.utils import database_call
 
 
