@@ -35,7 +35,7 @@ async def on_startup(dispatcher: Dispatcher):
 async def run_scheduled_tasks(api_manager: ApiManager):
     schedule = Scheduler()
 
-    user_manager = UserManager(api_manager)
+    user_manager = UserManager(api_manager, bot=bot)
     log_manager = LogManager(api_manager)
 
     schedule.every().day.do(user_manager.update_all_users)

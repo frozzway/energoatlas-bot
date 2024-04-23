@@ -13,7 +13,7 @@ router = Router(name='auth')
 
 @router.message(CommandStart())
 async def request_email(message: Message, state: FSMContext):
-    if await state.get_state() is Auth.authorized:
+    if await state.get_state() == Auth.authorized:
         return await render_main_menu(message)
     await state.set_state(Auth.email_requested)
     await message.answer('Введите email от учетной записи в Энергоатлас')

@@ -30,9 +30,16 @@ async def render_main_menu(event: Message | CallbackQuery):
     btn_text = 'Получить информацию о текущем состоянии параметров устройств'
     keyboard.button(text=btn_text, callback_data=CompaniesForm())
 
-    await event.answer(
-        text=text,
-        reply_markup=keyboard.as_markup())
+    if isinstance(event, CallbackQuery):
+        await event.message.edit_text(
+            text=text,
+            reply_markup=keyboard.as_markup())
+
+    elif isinstance(event, Message):
+        await event.answer(
+            text=text,
+            reply_markup=keyboard.as_markup()
+        )
 
 
 @router.callback_query(Auth.authorized, CompaniesForm.filter())
@@ -72,7 +79,8 @@ async def render_objects_list(
     api_manager: ApiManager
 ):
     """Отобразить список объектов выбранной организации"""
-    objects = await api_manager.get_company_objects(callback_data.company_id, auth_token)
+    company_id = callback_data.company_id
+    objects = await api_manager.get_company_objects(company_id, auth_token)
     on_api_error = partial(render_companies_list, query=query, state=state, auth_token=auth_token, api_manager=api_manager)
     await handle_api_error(query, objects, on_api_error)
 
@@ -81,15 +89,14 @@ async def render_objects_list(
     if len(objects) == 0:
         text = 'К организации не прикреплен ни один объект'
     if len(objects) == 1:
-        callback_data = DevicesForm(object_id=objects[0].id, company_id=callback_data.company_id)
+        callback_data = DevicesForm(object_id=objects[0].id, company_id=company_id)
         return await render_devices_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager,
                                          callback_data=callback_data)
 
     keyboard = InlineKeyboardBuilder()
     for item in objects:
-        text = (f'{item.name}\n'
-                f'{item.address}')
-        keyboard.button(text=text, callback_data=DevicesForm(object_id=item.id))
+        button_text = f'{item.name}, {item.address}'
+        keyboard.button(text=button_text, callback_data=DevicesForm(object_id=item.id, company_id=company_id))
     keyboard.adjust(1, 1)
 
     await query.message.edit_text(
@@ -124,7 +131,7 @@ async def render_devices_list(
 
     await query.message.edit_text(
         text=text,
-        reply_markup=PaginatedKeyboard(keyboard=keyboard, state=state, post=main_menu).first_page())
+        reply_markup=PaginatedKeyboard(keyboard=keyboard, state=state, post=main_menu, page_size=8).first_page())
 
 
 @router.callback_query(Auth.authorized, DeviceView.filter())

@@ -29,7 +29,7 @@ class AuthValidationMiddleware(BaseMiddleware):
         user_manager = UserManager(api_manager)
         data['user_manager'] = user_manager
 
-        if await state.get_state() is Auth.authorized:
+        if await state.get_state() == Auth.authorized:
             token = await get_auth_token(state, api_manager)
             if token == '':
                 await state.clear()
@@ -46,6 +46,7 @@ class AuthValidationMiddleware(BaseMiddleware):
                 if token := await api_manager.get_auth_token(login, password):
                     data['auth_token'] = token
                     await state.set_state(Auth.authorized)
+                    await state.update_data(login=login, password=password)
 
         await handler(event, data)
 
