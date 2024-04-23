@@ -46,7 +46,7 @@ class AuthValidationMiddleware(BaseMiddleware):
                     data['auth_token'] = token
                     await state.set_state(Auth.authorized)
 
-        return await handler(event, data)
+        await handler(event, data)
 
 
 class ApiErrorHandlerMiddleware(BaseMiddleware):
