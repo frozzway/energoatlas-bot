@@ -36,6 +36,13 @@ class UserManager(DbBaseManager):
         await self.session.commit()
 
     @database_call
+    async def add_user(self, telegram_id: int, login: str, password: str) -> None:
+        """Добавить учетные данные для авторизации в API Энергоатлас пользователя Telegram в базу данных"""
+        user = UserTable(telegram_user_id=telegram_id, login=login, password=password)
+        self.session.add(user)
+        await self.session.commit()
+
+    @database_call
     async def _get_all_users(self) -> list[UserTable]:
         users = await self.session.scalars(select(UserTable))
         return list(users)
