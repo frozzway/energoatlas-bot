@@ -40,7 +40,8 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
     token = await api_manager.get_auth_token(login=login, password=password)
     if token:
         await state.update_data(password=message.text)
-        await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
+        user = await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
+        await user_manager.update_user(user)
         await state.set_state(Auth.authorized)
         return await render_main_menu(message)
     elif token == '':

@@ -37,11 +37,12 @@ class UserManager(DbBaseManager):
         await self.session.commit()
 
     @database_call
-    async def add_user(self, telegram_id: int, login: str, password: str) -> None:
+    async def add_user(self, telegram_id: int, login: str, password: str) -> UserTable:
         """Добавить учетные данные для авторизации в API Энергоатлас пользователя Telegram в базу данных"""
         user = UserTable(telegram_user_id=telegram_id, login=login, password=password)
         self.session.add(user)
         await self.session.commit()
+        return user
 
     @database_call
     async def _get_all_users(self) -> list[UserTable]:
@@ -52,18 +53,20 @@ class UserManager(DbBaseManager):
     async def _set_devices_for_user(self, user: UserTable, devices: Iterable[ItemWithId]):
         """Установить пользователю относящиеся к нему устройства"""
         await self.session.execute(delete(UserDeviceTable).where(UserDeviceTable.telegram_user_id == user.telegram_user_id))
-        user.devices.add_all((UserDeviceTable(device_id=device.id) for device in devices))
+        rows = [UserDeviceTable(device_id=device.id) for device in devices]
+        self.session.add_all(rows)
+        user.devices.add_all(rows)
         await self.session.commit()
 
     async def update_all_users(self) -> None:
         """Обновить информацию по всем ранее авторизованным пользователям об относящихся к ним устройствах"""
         await self.refresh_session()
         users = await self._get_all_users()
-        futures = [self._update_user(user) for user in users]
+        futures = [self.update_user(user) for user in users]
         await asyncio.gather(*futures)
         logger.info('Обновлена информация по авторизованным пользователям')
 
-    async def _update_user(self, user: UserTable) -> None:
+    async def update_user(self, user: UserTable) -> None:
         """Обновить информацию об относящихся к пользователю устройствах"""
         if token := await self.api_manager.get_auth_token(user.login, user.password):
             devices = await self.api_manager.get_user_devices(token)
