@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from functools import partial
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped
 from sqlalchemy.orm import WriteOnlyMapped, mapped_column
 
@@ -32,7 +32,7 @@ class LogTable(Base):
     __tablename__ = 'LimitLogs'
 
     limit_id: Mapped[int] = mapped_column(comment='Идентификатор аварийного критерия устройства', primary_key=True)
-    latch_dt: Mapped[datetime] = mapped_column(comment='Время срабатывания аварийного критерия', primary_key=True)
+    latch_dt: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), comment='Время срабатывания аварийного критерия', primary_key=True)
 
     def __hash__(self):
         return hash((self.limit_id, self.latch_dt))
