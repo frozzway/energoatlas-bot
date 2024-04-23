@@ -26,11 +26,12 @@ class ApiManager:
         objects = response.json()
         for obj in objects:
             for device in obj['devices']:
-                instance = DeviceObject()
-                instance.obj_name = obj['name']
-                instance.obj_address = obj['address']
+                instance = DeviceObject.model_construct()
+                instance.object_name = obj['name']
+                instance.object_address = obj['address']
                 instance.name = device['name']
                 instance.id = device['id']
+                DeviceObject.model_validate(instance)
                 devices.add(instance)
         return devices
 
