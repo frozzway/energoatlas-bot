@@ -1,5 +1,5 @@
 from aiogram import Router
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
@@ -16,7 +16,7 @@ async def request_email(message: Message, state: FSMContext):
     if await state.get_state() is Auth.authorized:
         return await render_main_menu(message)
     await state.set_state(Auth.email_requested)
-    await message.answer('Введите Email от учетной записи в Энергоатлас')
+    await message.answer('Введите email от учетной записи в Энергоатлас')
 
 
 @router.message(Auth.email_requested)
@@ -43,9 +43,16 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
         await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
         await state.set_state(Auth.authorized)
         return await render_main_menu(message)
-    elif token is '':
+    elif token == '':
         await message.answer('Данные для входа неверны. Повторите попытку /start')
     else:
         await message.answer('Произошла ошибка обработки запроса к API Энергоатлас. Сервис временно недоступен. Повторите попытку позже /start')
 
     await state.clear()
+
+
+@router.message(Command('logout'))
+async def logout(message: Message, state: FSMContext, user_manager: UserManager):
+    await state.clear()
+    await user_manager.remove_user(telegram_id=message.from_user.id)
+    await request_email(message, state)
