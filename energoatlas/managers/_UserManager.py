@@ -9,6 +9,7 @@ from sqlalchemy import select, delete
 from energoatlas.tables import UserTable, UserDeviceTable
 from energoatlas.models import DeviceWithId
 from energoatlas.managers import ApiManager, DbBaseManager
+from energoatlas.models import ItemWithId
 from energoatlas.utils import database_call
 
 
@@ -48,7 +49,7 @@ class UserManager(DbBaseManager):
         return list(users)
 
     @database_call
-    async def _set_devices_for_user(self, user: UserTable, devices: Iterable[DeviceWithId]):
+    async def _set_devices_for_user(self, user: UserTable, devices: Iterable[ItemWithId]):
         """Установить пользователю относящиеся к нему устройства"""
         await self.session.execute(delete(UserDeviceTable).where(UserDeviceTable.telegram_user_id == user.telegram_user_id))
         user.devices.add_all((UserDeviceTable(device_id=device.id) for device in devices))

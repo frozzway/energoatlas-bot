@@ -8,10 +8,6 @@ class ItemWithId(Protocol):
     id: int
 
 
-class DeviceWithId(ItemWithId):
-    pass
-
-
 class Log(BaseModel):
     """Срабатывание аварийного критерия"""
     limit_id: int
@@ -19,7 +15,7 @@ class Log(BaseModel):
     latch_message: str
 
 
-class Device(BaseModel, DeviceWithId):
+class Device(BaseModel):
     """Устройство (датчик)"""
     object_name: str
     object_address: str
@@ -45,16 +41,16 @@ class TelegramMessageParams(BaseModel):
 
 
 class DeviceDict:
-    """Словарь для работы с объектами DeviceVm по ключу - идентификатору устройства"""
-    def __init__(self, devices: Iterable[DeviceWithId]):
-        self._devices: dict[int, DeviceWithId] = {}
+    """Словарь для работы с объектами Device по ключу - идентификатору устройства"""
+    def __init__(self, devices: Iterable[ItemWithId]):
+        self._devices: dict[int, ItemWithId] = {}
         for device in devices:
             self._devices[device.id] = device
 
-    def get_device(self, device_id: int) -> DeviceWithId:
+    def get_device(self, device_id: int) -> ItemWithId:
         """Возвращает устройство по его id."""
         return self._devices[device_id]
 
-    def __iter__(self) -> Iterator[DeviceWithId]:
+    def __iter__(self) -> Iterator[ItemWithId]:
         """Позволяет итерировать по устройствам."""
         return iter(self._devices.values())
