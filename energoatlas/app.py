@@ -5,9 +5,11 @@ from aiogram_extensions.paginator import router as paginator_router
 from aioshedule import Scheduler
 from loguru import logger
 
-from energoatlas.dependencies import http_client
 from energoatlas.aiogram import router as app_router
 from energoatlas.aiogram.middlewares import AuthValidationMiddleware, ApiErrorHandlerMiddleware
+from energoatlas.dependencies import http_client
+from energoatlas.database import main_thread_async_engine
+from energoatlas.tables import Base
 from energoatlas.settings import settings
 from energoatlas.managers import UserManager, LogManager, ApiManager
 
@@ -24,6 +26,7 @@ bot = Bot(token=settings.bot_token)
 
 
 async def on_startup(dispatcher: Dispatcher):
+    await create_tables()
     http_client_dependency = http_client()
     client = await anext(http_client_dependency)
     api_manager = ApiManager(client)
@@ -41,9 +44,16 @@ async def run_scheduled_tasks(api_manager: ApiManager):
     schedule.every().day.do(user_manager.update_all_users)
     schedule.every().minute.do(log_manager.request_logs_and_notify)
 
+    logger.info('Started background tasks...')
+
     while True:
         await schedule.run_pending()
         await asyncio.sleep(1)
+
+
+async def create_tables():
+    async with main_thread_async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def main():
