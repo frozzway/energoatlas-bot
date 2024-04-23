@@ -3,6 +3,7 @@ from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, func
+from loguru import logger
 
 from energoatlas.models import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
@@ -27,6 +28,10 @@ class LogManager(DbBaseManager):
             notified_logs = await self.get_notified_logs()
             logs_to_notify = self._determine_new_logs(notified_logs, devices_logs)
             await self._notify_telegram_users(logs_to_notify)
+            await self._save_new_logs(logs_to_notify)
+            logger.info('Успешно запрошены логи срабатываний аварийных критериев с API Энергоатлас')
+        else:
+            logger.error('Не удалось получить токен авторизации в API Энергоатлас администратора')
 
     @database_call
     async def get_subscribed_telegram_ids(self, device_ids: Iterable[int]) -> dict[int, list[int]]:
@@ -59,6 +64,14 @@ class LogManager(DbBaseManager):
         statement = select(UserDeviceTable.device_id).distinct()
         result = await self.session.scalars(statement)
         return list(result)
+
+    @database_call
+    async def _save_new_logs(self, devices_logs: Iterable[DeviceWithLogs]) -> None:
+        """Сохранить историю срабатываний аварийных критериев в базу данных"""
+        for device in devices_logs:
+            rows = [LogTable(latch_dt=log.latch_dt, limit_id=log.limit_id) for log in device.logs]
+            self.session.add_all(rows)
+        await self.session.commit()
 
     async def _get_devices_logs(self, devices: DeviceDict, token: str) -> list[DeviceWithLogs]:
         """Получить историю срабатывания аварийных критериев на устройствах из системы "Энергоатлас" за последние два дня
