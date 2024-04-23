@@ -13,14 +13,28 @@ class Settings(BaseSettings):
 
     base_url: str = 'http://stub:8888'
 
-    token: str = 'specify-your-token'
+    bot_token: str = 'specify-your-token'
     telegram_api_base: str = 'https://api.telegram.org/bot'
-    telegram_api_url: str = f'{telegram_api_base}{token}'
+    telegram_api_url: str = f'{telegram_api_base}{bot_token}'
 
     admin_login: str = ''
     admin_password: str = ''
 
     device_params_descr: list[str] = ['Связь', 'Уровень заряда батареи', 'Количество дыма']
+
+    targeted_logs: list[str] = [
+        'Протечка произошла',
+        'Протечка устранена',
+        'Предупреждение: давление выше нормы',
+        'Давление в норме',
+        'Авария падения давления',
+        'Авария превышения давления',
+        'Задымление',
+        'Предупреждение: обнаружено незначительное задымление',
+        'Задымление устранено',
+        'Пожар обнаружен',
+        'Пожар устранен'
+    ]
 
 
 settings = Settings(

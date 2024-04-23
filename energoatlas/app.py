@@ -19,7 +19,7 @@ router.message.outer_middleware(AuthValidationMiddleware())
 router.callback_query.outer_middleware(AuthValidationMiddleware())
 router.callback_query.middleware(ApiErrorHandlerMiddleware())
 
-bot = Bot(token=settings.token)
+bot = Bot(token=settings.bot_token)
 
 
 async def on_startup(dispatcher: Dispatcher):
