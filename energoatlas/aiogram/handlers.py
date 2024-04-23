@@ -10,7 +10,7 @@ from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.helpers import handle_api_error
 from energoatlas.app import router
 from energoatlas.managers import ApiManager
-
+from energoatlas.settings import settings
 
 main_menu = InlineKeyboardBuilder()
 main_menu.button(text='Главное меню', callback_data=MainMenu())
@@ -137,6 +137,8 @@ async def render_device_view(
     on_api_error = render_objects_list(query=query, state=state, callback_data=on_error_callback, auth_token=auth_token,
                                        api_manager=api_manager)
     await handle_api_error(query, device_params, on_api_error)
+
+    device_params = [param for param in device_params if param.descr in settings.device_params_descr]
 
     text = '\n'.join(repr(p) for p in device_params)
 

@@ -141,4 +141,4 @@ class ApiManager:
 
         response.raise_for_status()
 
-        return [Parameter(**data) for data in response.json() if data.get('descr') in settings.device_params_descr]
+        return [Parameter(**data) for data in response.json()]
