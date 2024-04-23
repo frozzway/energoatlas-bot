@@ -2,12 +2,12 @@ import asyncio
 from typing import Iterable
 
 from aiogram import Bot, Dispatcher
-from aiogram.methods import SendMessage
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, delete
+from loguru import logger
 
 from energoatlas.tables import UserTable, UserDeviceTable
-from energoatlas.models import ItemWithId
+from energoatlas.models import ItemWithId, TelegramMessageParams
 from energoatlas.managers._ApiManager import ApiManager
 from energoatlas.managers._DbBaseManager import DbBaseManager
 from energoatlas.utils import database_call
@@ -61,6 +61,7 @@ class UserManager(DbBaseManager):
         users = await self._get_all_users()
         futures = [self._update_user(user) for user in users]
         await asyncio.gather(*futures)
+        logger.info('Обновлена информация по авторизованным пользователям')
 
     async def _update_user(self, user: UserTable) -> None:
         """Обновить информацию об относящихся к пользователю устройствах"""
@@ -68,7 +69,10 @@ class UserManager(DbBaseManager):
             devices = await self.api_manager.get_user_devices(token)
             await self._set_devices_for_user(user, devices)
         else:
-            state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=user.telegram_user_id, user_id=user.telegram_user_id)
+            chat_id = user.telegram_user_id
+            state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=chat_id, user_id=user.telegram_user_id)
             await state.clear()
-            await SendMessage(chat_id=user.telegram_user_id, text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+            params = TelegramMessageParams(text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+            await self.api_manager.send_telegram_message(chat_id=chat_id, message_params=params)
             await self.remove_user(user.telegram_user_id)
+            logger.info(f'Удален пользователь с telegram_id {chat_id} из таблицы авторизованных пользователей')

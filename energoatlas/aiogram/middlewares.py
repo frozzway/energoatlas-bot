@@ -2,12 +2,12 @@ from typing import Callable, Any, Awaitable
 
 from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
-from aiogram.methods import SendMessage
 from aiogram.types import Message, CallbackQuery
 
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.helpers import ApiError
 from energoatlas.managers import ApiManager, UserManager
+from energoatlas.models import TelegramMessageParams
 
 
 async def get_auth_token(state: FSMContext, api_manager: ApiManager) -> str | None:
@@ -34,7 +34,8 @@ class AuthValidationMiddleware(BaseMiddleware):
             if token == '':
                 await state.clear()
                 await user_manager.remove_user(event.from_user.id)
-                await SendMessage(chat_id=event.from_user.id, text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+                params = TelegramMessageParams(text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+                await api_manager.send_telegram_message(chat_id=event.from_user.id, message_params=params)
             elif token is None:
                 return await event.answer(text='Произошла ошибка обработки запроса к API Энергоатлас. Попробуйте повторить запрос позже.')
             else:
