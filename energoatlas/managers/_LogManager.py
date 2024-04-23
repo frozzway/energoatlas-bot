@@ -85,9 +85,10 @@ class LogManager(DbBaseManager):
         result = []
         for future in completed_futures:
             device_id, logs = await future
-            vm = DeviceWithLogs()
+            vm = DeviceWithLogs.model_construct()
             vm.device = devices.get_device(device_id)
             vm.logs = [log for log in logs if strip_log(log.latch_message) in settings.targeted_logs]
+            DeviceWithLogs.model_validate(vm)
             result.append(vm)
         return result
 
