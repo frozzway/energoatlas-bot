@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -24,7 +26,7 @@ class Device(BaseModel):
 class Parameter(BaseModel):
     """Параметр устройства (датчика)"""
     descr: str
-    val: int | None
+    val: Any
     visible: int
     expired: int
     measurement: str
