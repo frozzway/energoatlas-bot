@@ -1,3 +1,5 @@
+from functools import partial
+
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -9,13 +11,12 @@ from aiogram_extensions.paginator import PaginatedKeyboard
 from energoatlas.aiogram.callbacks import MainMenu, CompaniesForm, ObjectsForm, DevicesForm, DeviceView
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.helpers import handle_api_error
-from energoatlas.app import router
 from energoatlas.managers import ApiManager
 from energoatlas.settings import settings
 
 
 main_menu = InlineKeyboardBuilder()
-main_menu.button(text='Главное меню', callback_data=MainMenu())
+main_menu.button(text='Главное меню', callback_data=MainMenu().pack())
 router = Router(name='main')
 
 
@@ -72,7 +73,7 @@ async def render_objects_list(
 ):
     """Отобразить список объектов выбранной организации"""
     objects = await api_manager.get_company_objects(callback_data.company_id, auth_token)
-    on_api_error = render_companies_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager)
+    on_api_error = partial(render_companies_list, query=query, state=state, auth_token=auth_token, api_manager=api_manager)
     await handle_api_error(query, objects, on_api_error)
 
     text = 'Выберите объект из списка'
@@ -108,17 +109,17 @@ async def render_devices_list(
     object_id = callback_data.object_id
     devices = await api_manager.get_object_devices(object_id, auth_token)
     on_error_callback = ObjectsForm(company_id=callback_data.company_id)
-    on_api_error = render_objects_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager,
-                                       callback_data=on_error_callback)
+    on_api_error = partial(render_objects_list, query=query, state=state, auth_token=auth_token,
+                           api_manager=api_manager, callback_data=on_error_callback)
     await handle_api_error(query, devices, on_api_error)
 
     text = 'Выберите устройство' if len(devices) > 0 else 'К объекту не привязано ни одно устройство'
 
     keyboard = InlineKeyboardBuilder()
     for device in devices:
-        text = f'{device.name} ({device.type})'
-        keyboard.button(text=text, callback_data=DeviceView(device_id=device.id, object_id=object_id,
-                                                            company_id=callback_data.company_id))
+        btn_text = f'{device.name} ({device.type})'
+        keyboard.button(text=btn_text, callback_data=DeviceView(device_id=device.id, object_id=object_id,
+                                                                company_id=callback_data.company_id))
     keyboard.adjust(1, 1)
 
     await query.message.edit_text(
@@ -137,8 +138,8 @@ async def render_device_view(
     """Отобразить параметры выбранного устройства"""
     device_params = await api_manager.get_device_status(callback_data.device_id, auth_token)
     on_error_callback = ObjectsForm(company_id=callback_data.company_id)
-    on_api_error = render_objects_list(query=query, state=state, callback_data=on_error_callback, auth_token=auth_token,
-                                       api_manager=api_manager)
+    on_api_error = partial(render_objects_list, query=query, state=state, callback_data=on_error_callback,
+                           auth_token=auth_token, api_manager=api_manager)
     await handle_api_error(query, device_params, on_api_error)
 
     device_params = [param for param in device_params if param.descr in settings.device_params_descr]
