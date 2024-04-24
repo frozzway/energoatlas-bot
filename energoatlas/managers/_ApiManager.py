@@ -14,13 +14,14 @@ class ApiManager:
         self.client = client
 
     @api_call(handle_errors=True)
-    async def get_user_devices(self, token: str) -> set[DeviceObject] | None:
+    async def get_user_devices(self, token: str, company_id: int) -> set[DeviceObject] | None:
         """Получить идентификаторы устройств, относящихся к пользователю
+        :param company_id: идентификатор компании, устройства на объектах которой запросятся
         :param token: Личный токен авторизации пользователя
         :return: Идентификаторы устройств или объект None при неуспешной авторизации (с выводом в лог)
         """
         devices = set()
-        response = await self.client.get(f'{settings.base_url}/api2/company/objects',
+        response = await self.client.get(f'{settings.base_url}/api2/company/objects?id={company_id}',
                                          headers={'Authorization': f'Bearer {token}'})
         response.raise_for_status()
         objects = response.json()

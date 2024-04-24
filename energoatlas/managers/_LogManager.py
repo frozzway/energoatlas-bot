@@ -133,6 +133,9 @@ class LogManager(DbBaseManager):
 
     async def _get_tracked_devices(self, token: str) -> set[Device]:
         """Получить набор объектов Device, по которым проверяется история срабатываний аварийных критериев"""
-        all_devices = await self.api_manager.get_user_devices(token)
+        companies = await self.api_manager.get_user_companies(token)
+        all_devices = set()
+        for company in companies:
+            all_devices.update(iter(await self.api_manager.get_user_devices(token, company.id)))
         tracked_devices_ids = await self._get_tracked_devices_ids()
         return set(device for device in all_devices if device.id in tracked_devices_ids)

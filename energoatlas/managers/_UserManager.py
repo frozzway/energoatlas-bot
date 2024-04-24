@@ -69,7 +69,10 @@ class UserManager(DbBaseManager):
     async def update_user(self, user: UserTable) -> None:
         """Обновить информацию об относящихся к пользователю устройствах"""
         if token := await self.api_manager.get_auth_token(user.login, user.password):
-            devices = await self.api_manager.get_user_devices(token)
+            companies = await self.api_manager.get_user_companies(token)
+            devices = set()
+            for company in companies:
+                devices.update(iter(await self.api_manager.get_user_devices(token, company.id)))
             await self._set_devices_for_user(user, devices)
         else:
             chat_id = user.telegram_user_id
