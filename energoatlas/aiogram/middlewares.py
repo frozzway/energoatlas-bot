@@ -1,8 +1,10 @@
 from typing import Callable, Any, Awaitable
 
+import aiogram.exceptions
 from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
+from loguru import logger
 
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.helpers import ApiError
@@ -62,3 +64,8 @@ class ApiErrorHandlerMiddleware(BaseMiddleware):
             return await handler(event, data)
         except ApiError:
             pass
+        except aiogram.exceptions.TelegramBadRequest as e:
+            if e.message.startswith('Bad Request: message is not modified'):
+                logger.warning(f'[Telegram API] {e.message}')
+            else:
+                raise e
