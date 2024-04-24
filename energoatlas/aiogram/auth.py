@@ -43,6 +43,7 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
         user = await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
         await user_manager.update_user(user)
         await state.set_state(Auth.authorized)
+        await message.answer(text='Вы успешно подписаны на получение уведомлений')
         return await render_main_menu(message)
     elif token == '':
         await message.answer('Данные для входа неверны. Повторите попытку /start')
