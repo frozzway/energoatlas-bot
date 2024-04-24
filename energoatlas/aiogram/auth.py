@@ -2,6 +2,7 @@ from aiogram import Router
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from loguru import logger
 
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.handlers import render_main_menu
@@ -55,6 +56,9 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
 
 @router.message(Command('logout'))
 async def logout(message: Message, state: FSMContext, user_manager: UserManager):
-    await state.clear()
-    await user_manager.remove_user(telegram_id=message.from_user.id)
-    await request_email(message, state)
+    if await state.get_state() == Auth.authorized:
+        logger.info(f'Пользователь с telegram_id {message.from_user.id} выполнил /logout')
+        await state.clear()
+        await user_manager.remove_user(telegram_id=message.from_user.id)
+        await message.answer('Вы отписаны от получения уведомлений. Авторизуйтесь повторно с помощью /start')
+
