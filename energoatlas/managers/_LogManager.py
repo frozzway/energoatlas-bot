@@ -7,7 +7,7 @@ from loguru import logger
 
 from energoatlas.models import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
-from energoatlas.managers import ApiManager, DbBaseManager
+from energoatlas.managers import ApiManager, DbBaseManager, MessageFormatter
 from energoatlas.utils import database_call, yesterday, strip_log
 from energoatlas.settings import settings
 
@@ -31,7 +31,7 @@ class LogManager(DbBaseManager):
             await self._save_new_logs(logs_to_notify)
             logger.info('Успешно запрошены логи срабатываний аварийных критериев с API Энергоатлас')
         else:
-            logger.error('Не удалось получить токен авторизации в API Энергоатлас администратора')
+            logger.error('Не удалось получить токен авторизации администратора в API Энергоатлас')
 
     @database_call
     async def get_subscribed_telegram_ids(self, device_ids: Iterable[int]) -> dict[int, list[int]]:
@@ -127,8 +127,8 @@ class LogManager(DbBaseManager):
         :param chat_id: идентификатор чата
         :param device_logs: устройства (датчики) со списком срабатываний аварийных критериев
         """
-        message_params = {}  # TODO: Класс собирающий сообщения
-        result = await self.api_manager.send_telegram_message(chat_id, message_params)
+        message_params = MessageFormatter.notification_message(device_logs)
+        await self.api_manager.send_telegram_message(chat_id, message_params)
 
         # TODO: обработать ответ на отсутствие прав отправки пользователю сообщения?
 
