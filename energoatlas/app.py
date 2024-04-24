@@ -42,7 +42,7 @@ async def run_scheduled_tasks(api_manager: ApiManager, dispatcher: Dispatcher):
     log_manager = LogManager(api_manager)
 
     schedule.every().day.do(user_manager.update_all_users)
-    schedule.every().second.do(log_manager.request_logs_and_notify)
+    schedule.every().minute.do(log_manager.request_logs_and_notify)
 
     logger.info('Started background tasks...')
 
