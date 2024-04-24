@@ -12,6 +12,7 @@ from loguru import logger
 
 from energoatlas.settings import settings
 
+
 tz = ZoneInfo(settings.timezone)
 T = TypeVar('T')
 
@@ -21,7 +22,7 @@ db_semaphore = asyncio.Semaphore(10)
 
 
 def yesterday() -> datetime:
-    now = datetime.now(tz)
+    now = datetime.today()
     return now.replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(days=1)
 
 

@@ -15,9 +15,9 @@ class ApiManager:
 
     @api_call(handle_errors=True)
     async def get_user_devices(self, token: str, company_id: int) -> set[DeviceObject] | None:
-        """Получить идентификаторы устройств, относящихся к пользователю
-        :param company_id: идентификатор компании, устройства на объектах которой запросятся
-        :param token: Личный токен авторизации пользователя
+        """Получить объекты устройств, относящихся к пользователю (в рамках одной компании)
+        :param company_id: идентификатор компании, устройства на объектах которой запрашиваются
+        :param token: Личный токен авторизации пользователя, имеющего право на доступ к компании
         :return: Идентификаторы устройств или объект None при неуспешной авторизации (с выводом в лог)
         """
         devices = set()
@@ -82,7 +82,7 @@ class ApiManager:
         response = await self.client.post(
             url=f'{settings.telegram_api_url}/sendMessage', data={
                 'chat_id': chat_id,
-                **message_params.model_dump(exclude_none=True)
+                **(message_params.model_dump(exclude_none=True))
             })
         response.raise_for_status()
 

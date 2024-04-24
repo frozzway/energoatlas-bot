@@ -89,7 +89,8 @@ class LogManager(DbBaseManager):
             vm.device = devices.get_device(device_id)
             vm.logs = [log for log in logs if strip_log(log.latch_message) in settings.targeted_logs]
             DeviceWithLogs.model_validate(vm)
-            result.append(vm)
+            if vm.logs:
+                result.append(vm)
         return result
 
     @staticmethod

@@ -30,19 +30,19 @@ async def on_startup(dispatcher: Dispatcher):
     http_client_dependency = http_client()
     client = await anext(http_client_dependency)
     api_manager = ApiManager(client)
-    task = asyncio.create_task(run_scheduled_tasks(api_manager))
+    task = asyncio.create_task(run_scheduled_tasks(api_manager, dispatcher))
     logger.info('Started polling...')
     await dispatcher.start_polling(bot, api_manager=api_manager)
 
 
-async def run_scheduled_tasks(api_manager: ApiManager):
+async def run_scheduled_tasks(api_manager: ApiManager, dispatcher: Dispatcher):
     schedule = Scheduler()
 
-    user_manager = UserManager(api_manager, bot=bot)
+    user_manager = UserManager(api_manager, bot=bot, dispatcher=dispatcher)
     log_manager = LogManager(api_manager)
 
     schedule.every().day.do(user_manager.update_all_users)
-    schedule.every().minute.do(log_manager.request_logs_and_notify)
+    schedule.every().second.do(log_manager.request_logs_and_notify)
 
     logger.info('Started background tasks...')
 

@@ -43,7 +43,7 @@ class DeviceWithLogs(BaseModel):
 
 class TelegramMessageParams(BaseModel):
     text: str
-    parse_mode: Literal['HTML', 'Markdown', 'MarkdownV2'] | None
+    parse_mode: Literal['HTML', 'Markdown', 'MarkdownV2'] | None = None
 
 
 class DeviceDict:
