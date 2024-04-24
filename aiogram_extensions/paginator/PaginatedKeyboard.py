@@ -35,8 +35,9 @@ class PaginatedKeyboard:
         """Вернуть Markup для первой страницы. При вызове этого метода объект записывается в состояние как последняя
          открытая клавиатура"""
         rows = self.items[:self.page_size]
-        nav_buttons = self._get_navigation_buttons(page=1)
-        rows.append(nav_buttons)
+        if len(self.items) > self.page_size:
+            nav_buttons = self._get_navigation_buttons(page=1)
+            rows.append(nav_buttons)
         self._add_static_buttons(rows)
         self.last_viewed_page = 1
         self.loop.run_until_complete(self.state.update_data(last_paginated_keyboard=self))
@@ -46,8 +47,9 @@ class PaginatedKeyboard:
         """Вернуть Markup для страницы с номером ``page``"""
         i = (page-1) * self.page_size
         rows = self.items[i:i+self.page_size]
-        nav_buttons = self._get_navigation_buttons(page=page)
-        rows.append(nav_buttons)
+        if len(self.items) > self.page_size:
+            nav_buttons = self._get_navigation_buttons(page=page)
+            rows.append(nav_buttons)
         self._add_static_buttons(rows)
         return InlineKeyboardMarkup(inline_keyboard=rows)
 
