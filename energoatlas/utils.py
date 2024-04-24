@@ -30,7 +30,7 @@ def strip_log(message: str) -> str:
     return re.search(r"[^(]*", message).group().strip()
 
 
-def api_call(handle_errors: bool = False, log_level=logging.WARNING, target_api_prefix='Энергоатлас API',
+def api_call(handle_errors: bool = False, log_level=logging.ERROR, target_api_prefix='Энергоатлас API',
              telegram_call=False):
     """Декоратор для асинхронных атомарных методов, выполняющих запросы к API "Энергоатлас" / Telegram. Ограничивает количество
     одновременных запросов в соответствии со значением семафора и логирующий Http-исключения и ответы с кодом 4хх-5хх.

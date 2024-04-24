@@ -55,7 +55,7 @@ class ApiManager:
 
         return response.json().get('token')
 
-    @api_call(handle_errors=True, log_level=logging.ERROR)
+    @api_call(handle_errors=True)
     async def get_limit_logs(self, device_id: int, token: str) -> tuple[int, list[Log]]:
         """Получить историю срабатывания аварийных критериев на устройстве за последние два дня
         :param device_id: идентификатор устройства
