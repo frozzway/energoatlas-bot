@@ -32,6 +32,7 @@ async def on_startup(dispatcher: Dispatcher):
     api_manager = ApiManager(client)
     task = asyncio.create_task(run_scheduled_tasks(api_manager, dispatcher))
     logger.info('Started polling...')
+    await bot.set_my_commands(settings.bot_commands)
     await dispatcher.start_polling(bot, api_manager=api_manager)
 
 

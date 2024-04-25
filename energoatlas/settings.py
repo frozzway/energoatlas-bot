@@ -1,3 +1,4 @@
+from aiogram.types import BotCommand
 from pydantic_settings import BaseSettings
 
 
@@ -34,6 +35,12 @@ class Settings(BaseSettings):
         'Задымление устранено',
         'Пожар обнаружен',
         'Пожар устранен'
+    ]
+
+    bot_commands: list[BotCommand] = [
+        BotCommand(command="start", description="Начало работы"),
+        BotCommand(command="menu", description="Главное меню"),
+        BotCommand(command="logout", description="Отписаться от уведомлений"),
     ]
 
 
