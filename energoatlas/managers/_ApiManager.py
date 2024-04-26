@@ -1,5 +1,3 @@
-import logging
-
 import httpx
 
 from energoatlas.settings import settings
