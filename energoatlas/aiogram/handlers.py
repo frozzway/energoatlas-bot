@@ -129,9 +129,11 @@ async def render_devices_list(
                                                                 company_id=callback_data.company_id))
     keyboard.adjust(1, 1)
 
+    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text)
+
     await query.message.edit_text(
         text=text,
-        reply_markup=PaginatedKeyboard(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text).first_page())
+        reply_markup=keyboard.first_page())
 
 
 @router.callback_query(Auth.authorized, DeviceView.filter())
@@ -154,7 +156,7 @@ async def render_device_view(
     text = '\n'.join(repr(p) for p in device_params)
 
     keyboard = InlineKeyboardBuilder()
-    if paginated_keyboard := PaginatedKeyboard.last_opened(state):
+    if paginated_keyboard := await PaginatedKeyboard.last_opened(state):
         keyboard.button(text='К списку устройств', callback_data=paginated_keyboard.last_opened_page_cb())
     else:
         keyboard.button(text='К списку устройств', callback_data=DevicesForm(object_id=callback_data.object_id,
