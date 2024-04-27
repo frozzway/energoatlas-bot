@@ -1,4 +1,4 @@
-from energoatlas.models import DeviceWithLogs, TelegramMessageParams
+from energoatlas.models.background import DeviceWithLogs, TelegramMessageParams
 
 
 class MessageFormatter:

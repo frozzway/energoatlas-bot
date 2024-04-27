@@ -9,7 +9,7 @@ from loguru import logger
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.helpers import ApiError
 from energoatlas.managers import ApiManager, UserManager
-from energoatlas.models import TelegramMessageParams
+from energoatlas.models.background import TelegramMessageParams
 
 
 async def get_auth_token(state: FSMContext, api_manager: ApiManager) -> str | None:

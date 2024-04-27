@@ -7,7 +7,7 @@ from sqlalchemy import select, delete
 from loguru import logger
 
 from energoatlas.tables import UserTable, UserDeviceTable
-from energoatlas.models import ItemWithId, TelegramMessageParams
+from energoatlas.models.background import ItemWithId, TelegramMessageParams
 from energoatlas.managers._ApiManager import ApiManager
 from energoatlas.managers._DbBaseManager import DbBaseManager
 from energoatlas.utils import database_call

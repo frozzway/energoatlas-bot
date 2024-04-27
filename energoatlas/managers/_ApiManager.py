@@ -2,9 +2,9 @@ import httpx
 
 from energoatlas.settings import settings
 from energoatlas.utils import yesterday, api_call
-from energoatlas.models import Device as DeviceObject
-from energoatlas.models import Log, TelegramMessageParams
-from energoatlas.aiogram.models import Company, Object, Parameter, Device
+from energoatlas.models.background import Device as DeviceObject
+from energoatlas.models.background import Log, TelegramMessageParams
+from energoatlas.models.aiogram import Company, Object, Parameter, Device
 
 
 class ApiManager:

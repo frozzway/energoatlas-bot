@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, func
 from loguru import logger
 
-from energoatlas.models import DeviceWithLogs, DeviceDict, Device
+from energoatlas.models.background import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
 from energoatlas.managers import ApiManager, DbBaseManager, MessageFormatter
 from energoatlas.utils import database_call, yesterday, strip_log
