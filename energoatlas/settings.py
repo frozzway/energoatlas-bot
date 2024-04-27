@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     db_host: str = 'localhost'
     db_port: str = '5432'
     db_database: str = 'EnergoAtlasBot'
+    test_database: str = 'TestDatabase'
 
     base_url: str = 'http://stub:8888'
 

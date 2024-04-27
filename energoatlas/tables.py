@@ -24,7 +24,7 @@ class UserTable(Base):
     login: Mapped[str] = mapped_column(comment='Логин в системе "Энергоатлас"')
     password: Mapped[str] = mapped_column(comment='Пароль в системе "Энергоатлас"')
 
-    devices: WriteOnlyMapped[UserDeviceTable] = relationship(cascade='delete')
+    devices: WriteOnlyMapped[UserDeviceTable] = relationship(cascade='delete', passive_deletes=True)
 
 
 class LogTable(Base):
