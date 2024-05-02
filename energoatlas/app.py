@@ -6,7 +6,7 @@ from aioshedule import Scheduler
 from loguru import logger
 
 from energoatlas.aiogram import router as app_router
-from energoatlas.aiogram.middlewares import AuthValidationMiddleware, ApiErrorHandlerMiddleware
+from energoatlas.aiogram.middlewares import AuthValidationMiddleware, TelegramApiErrorHandlerMiddleware
 from energoatlas.dependencies import http_client
 from energoatlas.database import main_thread_async_engine
 from energoatlas.tables import Base
@@ -20,7 +20,7 @@ router.include_router(app_router)
 
 router.message.outer_middleware(AuthValidationMiddleware())
 router.callback_query.outer_middleware(AuthValidationMiddleware())
-router.callback_query.middleware(ApiErrorHandlerMiddleware())
+router.callback_query.middleware(TelegramApiErrorHandlerMiddleware())
 
 bot = Bot(token=settings.bot_token)
 
@@ -30,7 +30,7 @@ async def on_startup(dispatcher: Dispatcher):
     http_client_dependency = http_client()
     client = await anext(http_client_dependency)
     api_manager = ApiManager(client)
-    task = asyncio.create_task(run_scheduled_tasks(api_manager, dispatcher))
+    _ = asyncio.create_task(run_scheduled_tasks(api_manager, dispatcher))
     logger.info('Started polling...')
     await bot.set_my_commands(settings.bot_commands)
     await dispatcher.start_polling(bot, api_manager=api_manager)

@@ -44,6 +44,9 @@ class Settings(BaseSettings):
         BotCommand(command="logout", description="Отписаться от уведомлений"),
     ]
 
+    api_error_message: str = 'Произошла ошибка обработки запроса к API Энергоатлас. Попробуйте повторить запрос позже.'
+    need_authorize_message: str = 'Необходимо повторно авторизоваться в боте. Используйте команду /start'
+
 
 settings = Settings(
     _env_file='.env',

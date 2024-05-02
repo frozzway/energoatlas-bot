@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, delete
 from loguru import logger
 
+from energoatlas.settings import settings
 from energoatlas.tables import UserTable, UserDeviceTable
 from energoatlas.models.background import ItemWithId, TelegramMessageParams
 from energoatlas.managers._ApiManager import ApiManager
@@ -78,7 +79,7 @@ class UserManager(DbBaseManager):
             chat_id = user.telegram_user_id
             state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=chat_id, user_id=user.telegram_user_id)
             await state.clear()
-            params = TelegramMessageParams(text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+            params = TelegramMessageParams(text=settings.need_authorize_message)
             await self.api_manager.send_telegram_message(chat_id=chat_id, message_params=params)
             await self.remove_user(user.telegram_user_id)
             logger.info(f'Удален пользователь с telegram_id {chat_id} из таблицы авторизованных пользователей')

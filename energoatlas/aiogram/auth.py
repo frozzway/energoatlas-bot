@@ -3,6 +3,7 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from loguru import logger
+from httpx import HTTPError
 
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.handlers import render_main_menu
@@ -38,17 +39,18 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
     if not password:
         return await request_password(message, state)
 
-    token = await api_manager.get_auth_token(login=login, password=password)
-    if token:
-        await state.update_data(password=message.text)
-        user = await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
-        await user_manager.update_user(user)
-        await state.set_state(Auth.authorized)
-        await message.answer(text='Вы успешно подписаны на получение уведомлений')
-        return await render_main_menu(message)
-    elif token == '':
-        await message.answer('Данные для входа неверны. Повторите попытку /start')
-    else:
+    try:
+        token = await api_manager.get_auth_token(login=login, password=password)
+        if token:
+            await state.update_data(password=message.text)
+            user = await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
+            await user_manager.update_user(user)
+            await state.set_state(Auth.authorized)
+            await message.answer(text='Вы успешно подписаны на получение уведомлений')
+            return await render_main_menu(message)
+        else:
+            await message.answer('Данные для входа неверны. Повторите попытку /start')
+    except HTTPError:
         await message.answer('Произошла ошибка обработки запроса к API Энергоатлас. Сервис временно недоступен. Повторите попытку позже /start')
 
     await state.clear()

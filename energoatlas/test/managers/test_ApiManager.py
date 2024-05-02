@@ -23,7 +23,7 @@ async def test_get_auth_token_unauthorized(api_manager):
 
     token = await api_manager.get_auth_token('wrong_login', 'wrong_password')
 
-    assert token == ''
+    assert token is None
 
 
 @pytest.mark.asyncio

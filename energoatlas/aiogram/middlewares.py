@@ -5,10 +5,11 @@ from aiogram import BaseMiddleware
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from loguru import logger
+from httpx import HTTPError
 
 from energoatlas.aiogram.states import Auth
-from energoatlas.aiogram.helpers import ApiError
 from energoatlas.database import AsyncSessionMaker
+from energoatlas.settings import settings
 from energoatlas.managers import ApiManager, UserManager
 from energoatlas.models.background import TelegramMessageParams
 
@@ -34,20 +35,27 @@ class AuthValidationMiddleware(BaseMiddleware):
         data['user_manager'] = user_manager
 
         if await state.get_state() == Auth.authorized:
-            token = await get_auth_token(state, api_manager)
-            if token == '':
+            try:
+                token = await get_auth_token(state, api_manager)
+            except HTTPError:
+                return await event.answer(text=settings.api_error_message)
+
+            if token:
+                data['auth_token'] = token
+            else:
                 await state.clear()
                 await user_manager.remove_user(event.from_user.id)
-                params = TelegramMessageParams(text='Необходимо повторно авторизоваться в боте. Используйте команду /start')
+                params = TelegramMessageParams(text=settings.need_authorize_message)
                 await api_manager.send_telegram_message(chat_id=event.from_user.id, message_params=params)
-            elif token is None:
-                return await event.answer(text='Произошла ошибка обработки запроса к API Энергоатлас. Попробуйте повторить запрос позже.')
-            else:
-                data['auth_token'] = token
         else:
             if credentials := await user_manager.get_user_credentials(event.from_user.id):
                 login, password = credentials
-                if token := await api_manager.get_auth_token(login, password):
+                try:
+                    token = await api_manager.get_auth_token(login, password)
+                except HTTPError:
+                    return await event.answer(text=settings.api_error_message)
+
+                if token:
                     data['auth_token'] = token
                     await state.set_state(Auth.authorized)
                     await state.update_data(login=login, password=password)
@@ -56,7 +64,7 @@ class AuthValidationMiddleware(BaseMiddleware):
         await session.close()
 
 
-class ApiErrorHandlerMiddleware(BaseMiddleware):
+class TelegramApiErrorHandlerMiddleware(BaseMiddleware):
     async def __call__(
             self,
             handler: Callable[[CallbackQuery, dict[str, Any]], Awaitable[Any]],
@@ -65,10 +73,8 @@ class ApiErrorHandlerMiddleware(BaseMiddleware):
     ) -> Any:
         try:
             return await handler(event, data)
-        except ApiError:
-            pass
-        except aiogram.exceptions.TelegramBadRequest as e:
-            if e.message.startswith('Bad Request: message is not modified'):
-                logger.warning(f'[Telegram API] {e.message}')
+        except aiogram.exceptions.TelegramBadRequest as exc:
+            if exc.message.startswith('Bad Request: message is not modified'):
+                logger.warning(f'[Telegram API] {exc.message}')
             else:
-                raise e
+                raise exc

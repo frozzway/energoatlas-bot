@@ -4,6 +4,7 @@ from typing import Iterable
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, func
 from loguru import logger
+from httpx import HTTPError
 
 from energoatlas.models.background import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
@@ -84,14 +85,17 @@ class LogManager(DbBaseManager):
         completed_futures = asyncio.as_completed(futures)
         result = []
         for future in completed_futures:
-            if response := await future:
-                device_id, logs = response
-                vm = DeviceWithLogs.model_construct()
-                vm.device = devices.get_device(device_id)
-                vm.logs = [log for log in logs if strip_log(log.latch_message) in settings.targeted_logs]
-                DeviceWithLogs.model_validate(vm)
-                if vm.logs:
-                    result.append(vm)
+            try:
+                response = await future
+            except HTTPError:
+                continue
+            device_id, logs = response
+            vm = DeviceWithLogs.model_construct()
+            vm.device = devices.get_device(device_id)
+            vm.logs = [log for log in logs if strip_log(log.latch_message) in settings.targeted_logs]
+            DeviceWithLogs.model_validate(vm)
+            if vm.logs:
+                result.append(vm)
         return result
 
     @staticmethod

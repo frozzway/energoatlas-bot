@@ -1,16 +1,14 @@
-from functools import partial
-
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from httpx import HTTPError
 
 from aiogram_extensions.paginator import PaginatedKeyboard
 
 from energoatlas.aiogram.callbacks import MainMenu, CompaniesForm, ObjectsForm, DevicesForm, DeviceView
 from energoatlas.aiogram.states import Auth
-from energoatlas.aiogram.helpers import handle_api_error
 from energoatlas.managers import ApiManager
 from energoatlas.settings import settings
 
@@ -50,8 +48,10 @@ async def render_companies_list(
     api_manager: ApiManager
 ):
     """Отобразить список компаний (организаций)"""
-    companies = await api_manager.get_user_companies(auth_token)
-    await handle_api_error(query, companies)
+    try:
+        companies = await api_manager.get_user_companies(auth_token)
+    except HTTPError:
+        return await query.answer(text=settings.api_error_message)
 
     text = 'Выберите организацию из списка'
 
@@ -80,9 +80,12 @@ async def render_objects_list(
 ):
     """Отобразить список объектов выбранной организации"""
     company_id = callback_data.company_id
-    objects = await api_manager.get_company_objects(company_id, auth_token)
-    on_api_error = partial(render_companies_list, query=query, state=state, auth_token=auth_token, api_manager=api_manager)
-    await handle_api_error(query, objects, on_api_error)
+
+    try:
+        objects = await api_manager.get_company_objects(company_id, auth_token)
+    except HTTPError:
+        await query.answer(text=settings.api_error_message)
+        return render_companies_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager)
 
     text = 'Выберите объект из списка'
 
@@ -114,11 +117,13 @@ async def render_devices_list(
 ):
     """Отобразить список устройств выбранного объекта"""
     object_id = callback_data.object_id
-    devices = await api_manager.get_object_devices(object_id, auth_token)
-    on_error_callback = ObjectsForm(company_id=callback_data.company_id)
-    on_api_error = partial(render_objects_list, query=query, state=state, auth_token=auth_token,
-                           api_manager=api_manager, callback_data=on_error_callback)
-    await handle_api_error(query, devices, on_api_error)
+
+    try:
+        devices = await api_manager.get_object_devices(object_id, auth_token)
+    except HTTPError:
+        await query.answer(text=settings.api_error_message)
+        return await render_objects_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager,
+                                         callback_data=ObjectsForm(company_id=callback_data.company_id))
 
     text = 'Выберите устройство' if len(devices) > 0 else 'К объекту не привязано ни одно устройство'
 
@@ -145,11 +150,12 @@ async def render_device_view(
     api_manager: ApiManager
 ):
     """Отобразить параметры выбранного устройства"""
-    device_params = await api_manager.get_device_status(callback_data.device_id, auth_token)
-    on_error_callback = ObjectsForm(company_id=callback_data.company_id)
-    on_api_error = partial(render_objects_list, query=query, state=state, callback_data=on_error_callback,
-                           auth_token=auth_token, api_manager=api_manager)
-    await handle_api_error(query, device_params, on_api_error)
+    try:
+        device_params = await api_manager.get_device_status(callback_data.device_id, auth_token)
+    except HTTPError:
+        await query.answer(text=settings.api_error_message)
+        return await render_objects_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager,
+                                         callback_data=ObjectsForm(company_id=callback_data.company_id))
 
     device_params = [param for param in device_params if param.descr in settings.device_params_descr]
 

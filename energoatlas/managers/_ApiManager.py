@@ -12,7 +12,7 @@ class ApiManager:
         self.client = client
 
     @api_call(handle_errors=True)
-    async def get_user_devices(self, token: str, company_id: int) -> set[DeviceObject] | None:
+    async def get_user_devices(self, token: str, company_id: int) -> set[DeviceObject]:
         """Получить объекты устройств, относящихся к пользователю (в рамках одной компании)
         :param company_id: идентификатор компании, устройства на объектах которой запрашиваются
         :param token: Личный токен авторизации пользователя, имеющего право на доступ к компании
@@ -47,7 +47,7 @@ class ApiManager:
         })
 
         if response.status_code == 401:
-            return ''
+            return None
 
         response.raise_for_status()
 
@@ -85,7 +85,7 @@ class ApiManager:
         response.raise_for_status()
 
     @api_call(handle_errors=True)
-    async def get_user_companies(self, token: str) -> list[Company] | None:
+    async def get_user_companies(self, token: str) -> list[Company]:
         """Получить список компаний, к которым отнесен пользователь
         :param token: Личный токен авторизации пользователя
         """
@@ -97,8 +97,8 @@ class ApiManager:
         return [Company(**data) for data in response.json()]
 
     @api_call(handle_errors=True)
-    async def get_company_objects(self, company_id: int, token: str) -> list[Object] | None:
-        """Получить список объектов одной компании. Возвращает `None` при отсутствии прав
+    async def get_company_objects(self, company_id: int, token: str) -> list[Object]:
+        """Получить список объектов одной компании.
         :param company_id: идентификатор компании
         :param token: Личный токен авторизации пользователя
         """
@@ -106,15 +106,15 @@ class ApiManager:
                                          headers={'Authorization': f'Bearer {token}'})
 
         if response.status_code == 403:
-            return None
+            return []
 
         response.raise_for_status()
 
         return [Object(**data) for data in response.json()]
 
     @api_call(handle_errors=True)
-    async def get_object_devices(self, object_id: int, token: str) -> list[Device] | None:
-        """Получить список устройств на объекте. Возвращает `None` при отсутствии прав
+    async def get_object_devices(self, object_id: int, token: str) -> list[Device]:
+        """Получить список устройств на объекте.
         :param object_id: идентификатор объекта
         :param token: Личный токен авторизации пользователя
         """
@@ -122,15 +122,15 @@ class ApiManager:
                                          headers={'Authorization': f'Bearer {token}'})
 
         if response.status_code == 403:
-            return None
+            return []
 
         response.raise_for_status()
 
         return [Device(**data) for data in response.json()['devices']]
 
     @api_call(handle_errors=True)
-    async def get_device_status(self, device_id: int, token: str) -> list[Parameter] | None:
-        """Получить текущую информацию о параметрах устройства. Возвращает `None` при отсутствии прав
+    async def get_device_status(self, device_id: int, token: str) -> list[Parameter]:
+        """Получить текущую информацию о параметрах устройства.
         :param device_id: Идентификатор устройства
         :param token: Личный токен авторизации пользователя
         """
@@ -138,7 +138,7 @@ class ApiManager:
                                          headers={'Authorization': f'Bearer {token}'})
 
         if response.status_code == 403:
-            return None
+            return []
 
         response.raise_for_status()
 
