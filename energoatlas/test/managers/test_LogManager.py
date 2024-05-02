@@ -98,16 +98,16 @@ def test_determine_new_logs(log_manager, devices, logs, logs_table):
 async def test_get_subscribed_telegram_ids_makes_correct_dict(log_manager, mocker: MockerFixture):
     device_ids = [1, 2, 3]
     test_data = [
-        mocker.MagicMock(device_id=1, telegram_ids=[100, 101]),
-        mocker.MagicMock(device_id=2, telegram_ids=[102, 103]),
-        mocker.MagicMock(device_id=3, telegram_ids=[104, 105])
+        mocker.MagicMock(device_id=100, telegram_ids=[0, 1]),
+        mocker.MagicMock(device_id=200, telegram_ids=[2, 3]),
+        mocker.MagicMock(device_id=300, telegram_ids=[4, 5])
     ]
     result_mocked = mocker.MagicMock(all=mocker.Mock(return_value=test_data))
     log_manager.session.execute = mocker.AsyncMock(return_value=result_mocked)
 
     result = await log_manager.get_subscribed_telegram_ids(device_ids)
 
-    expected_result = {1: [100, 101], 2: [102, 103], 3: [104, 105]}
+    expected_result = {100: [0, 1], 200: [2, 3], 300: [4, 5]}
     assert result == expected_result
 
 
