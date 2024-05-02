@@ -63,8 +63,8 @@ class UserManager(DbBaseManager):
         """Обновить информацию по всем ранее авторизованным пользователям об относящихся к ним устройствах"""
         await self.refresh_session()
         users = await self._get_all_users()
-        futures = [self.update_user(user) for user in users]
-        await asyncio.gather(*futures)
+        coroutines = [self.update_user(user) for user in users]
+        await asyncio.gather(*coroutines)
         logger.info('Обновлена информация по авторизованным пользователям')
 
     async def update_user(self, user: UserTable) -> None:

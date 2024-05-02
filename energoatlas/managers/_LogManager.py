@@ -81,8 +81,8 @@ class LogManager(DbBaseManager):
         :param token: токен авторизации пользователя, у которого есть доступ на получение истории по переданным
         устройствам.
         """
-        futures = [self.api_manager.get_limit_logs(device.id, token) for device in devices]
-        completed_futures = asyncio.as_completed(futures)
+        coroutines = [self.api_manager.get_limit_logs(device.id, token) for device in devices]
+        completed_futures = asyncio.as_completed(coroutines)
         result = []
         for future in completed_futures:
             try:
@@ -124,8 +124,8 @@ class LogManager(DbBaseManager):
                 if user_id not in user_devices:
                     user_devices[user_id] = []
                 user_devices[user_id].append(unit)
-        futures = [self._send_notification_in_chat(id_, device) for id_, device in user_devices.items()]
-        await asyncio.gather(*futures)
+        coroutines = [self._send_notification_in_chat(id_, device) for id_, device in user_devices.items()]
+        await asyncio.gather(*coroutines)
 
     async def _send_notification_in_chat(self, chat_id: int, device_logs: list[DeviceWithLogs]) -> None:
         """Отправить уведомление в один чат Telegram о срабатывании аварийных критериев на устройствах
@@ -134,8 +134,6 @@ class LogManager(DbBaseManager):
         """
         message_params = MessageFormatter.notification_message(device_logs)
         await self.api_manager.send_telegram_message(chat_id, message_params)
-
-        # TODO: обработать ответ на отсутствие прав отправки пользователю сообщения?
 
     async def _get_tracked_devices(self, token: str) -> set[Device]:
         """Получить набор объектов Device, по которым проверяется история срабатываний аварийных критериев"""
