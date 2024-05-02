@@ -1,5 +1,5 @@
+import asyncio
 from datetime import datetime
-from unittest.mock import AsyncMock
 
 import pytest
 from dateutil.relativedelta import relativedelta as rd
@@ -8,7 +8,8 @@ from pytest_mock import MockerFixture
 import energoatlas.managers
 import energoatlas.database
 from energoatlas.models.aiogram import Company
-from energoatlas.models.background import Device, DeviceWithLogs, Log
+from energoatlas.models.background import Device, DeviceWithLogs, Log, DeviceDict
+from energoatlas.settings import settings
 from energoatlas.tables import LogTable
 
 
@@ -47,27 +48,27 @@ def logs_table():
 @pytest.fixture
 def logs():
     return [
-        Log.model_construct(limit_id=0, latch_dt=dt1),
-        Log.model_construct(limit_id=0, latch_dt=dt2),
-        Log.model_construct(limit_id=0, latch_dt=dt3),
-        Log.model_construct(limit_id=1, latch_dt=dt1),
-        Log.model_construct(limit_id=1, latch_dt=dt2),
-        Log.model_construct(limit_id=1, latch_dt=dt3),
+        Log.model_construct(limit_id=0, latch_dt=dt1, latch_message=''),
+        Log.model_construct(limit_id=0, latch_dt=dt2, latch_message=''),
+        Log.model_construct(limit_id=0, latch_dt=dt3, latch_message=''),
+        Log.model_construct(limit_id=1, latch_dt=dt1, latch_message=''),
+        Log.model_construct(limit_id=1, latch_dt=dt2, latch_message=''),
+        Log.model_construct(limit_id=1, latch_dt=dt3, latch_message=''),
     ]
 
 
 @pytest.mark.asyncio
-async def test_get_tracked_devices(log_manager, devices, companies):
-    energoatlas.managers.ApiManager.get_user_companies = AsyncMock(return_value=companies)
+async def test_get_tracked_devices(log_manager, devices, companies, mocker: MockerFixture):
+    log_manager.api_manager.get_user_companies = mocker.AsyncMock(return_value=companies)
 
     # Набор устройств, полученных по API Энергоатлас
-    energoatlas.managers.ApiManager.get_user_devices = AsyncMock(side_effect=[
+    energoatlas.managers.ApiManager.get_user_devices = mocker.AsyncMock(side_effect=[
         {devices[0], devices[1]},
         {devices[2], devices[3]},
     ])
 
     # Идентификаторы устройств, по которым ведется отслеживание
-    energoatlas.managers.LogManager._get_tracked_devices_ids = AsyncMock(return_value=[0, 2])
+    log_manager._get_tracked_devices_ids = mocker.AsyncMock(return_value=[0, 2])
 
     result = await log_manager._get_tracked_devices('token')
 
@@ -114,7 +115,65 @@ async def test_get_subscribed_telegram_ids_makes_correct_dict(log_manager, mocke
 @pytest.mark.asyncio
 async def test_get_subscribed_telegram_ids_db_call(log_manager, user_devices, test_session):
     log_manager.session = test_session
+
     result = await log_manager.get_subscribed_telegram_ids([100, 200, 300])
 
     expected_result = {100: [1, 2, 3], 200: [1, 2], 300: [1]}
     assert result == expected_result
+
+
+@pytest.mark.asyncio
+async def test_get_tracked_devices_ids(log_manager, user_devices, test_session):
+    log_manager.session = test_session
+
+    result = await log_manager._get_tracked_devices_ids()
+
+    expected_result = set(d.device_id for d in user_devices)
+    assert set(result) == expected_result
+
+
+@pytest.mark.asyncio
+async def test_get_devices_logs(log_manager, logs, devices, mocker: MockerFixture):
+    target_logs = []
+    for i in range(3):
+        log = logs[i]
+        log.latch_message = settings.targeted_logs[i] + ' (Хранилище 2 ) '
+        target_logs.append(log)
+
+    test_responses = [(device.id, logs) for device in devices]
+    test_responses[0] = (0, [])  # Device с пустыми логами попадать в результирующий список не должен
+    test_responses[1] = (0, logs[3:])  # Device с логами, отличными от target попадать в результирующий список не должен
+
+    mocked_futures = [asyncio.Future() for _ in test_responses]
+    for future, response in zip(mocked_futures, test_responses):
+        future.set_result(response)
+
+    mocker.patch('asyncio.as_completed', return_value=mocked_futures)
+    DeviceWithLogs.model_validate = mocker.Mock()
+    log_manager.api_manager.get_limit_logs = mocker.Mock()
+
+    result = await log_manager._get_devices_logs(DeviceDict(devices), 'test_token')
+
+    assert len(result) == len(devices) - 2
+    for device_with_logs in result:
+        assert device_with_logs.device in devices
+        assert device_with_logs.logs == target_logs
+
+
+@pytest.mark.asyncio
+async def test_notify_telegram_users(log_manager, devices, logs, mocker: MockerFixture):
+    subscribed_telegram_ids = {0: [10, 20, 30], 1: [10, 20], 2: [10], 3: [20, 30]}
+    log_manager.get_subscribed_telegram_ids = mocker.AsyncMock(return_value=subscribed_telegram_ids)
+    devices = [DeviceWithLogs(device=d, logs=logs) for d in devices]
+    user_devices = {
+        10: [devices[0], devices[1], devices[2]],
+        20: [devices[0], devices[1], devices[3]],
+        30: [devices[0], devices[3]]
+    }
+    method = mocker.patch.object(log_manager, '_send_notification_in_chat', new_callable=mocker.AsyncMock)
+
+    await log_manager._notify_telegram_users(devices)
+
+    method.assert_has_calls([
+        mocker.call(id_, device) for id_, device in user_devices.items()
+    ])
