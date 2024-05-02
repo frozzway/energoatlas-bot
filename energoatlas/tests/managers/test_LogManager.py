@@ -5,7 +5,6 @@ import pytest
 from dateutil.relativedelta import relativedelta as rd
 from pytest_mock import MockerFixture
 
-from energoatlas.models.aiogram import Company
 from energoatlas.models.background import DeviceWithLogs, Log, DeviceDict
 from energoatlas.settings import settings
 from energoatlas.tables import LogTable
