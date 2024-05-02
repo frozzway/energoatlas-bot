@@ -17,11 +17,6 @@ dt3 = dt2 + rd(days=1)
 
 
 @pytest.fixture
-def companies():
-    return [Company(id=1, name='Test Company'), Company(id=2, name='Test Company')]
-
-
-@pytest.fixture
 def logs_table():
     return [
         LogTable(limit_id=0, latch_dt=dt1),

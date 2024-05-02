@@ -7,6 +7,7 @@ from sqlalchemy import NullPool
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
+from energoatlas.models.aiogram import Company
 from energoatlas.models.background import Device
 from energoatlas.settings import settings
 from energoatlas.tables import Base, UserTable, UserDeviceTable
@@ -72,6 +73,11 @@ def devices():
         Device.model_construct(id=2),
         Device.model_construct(id=3),
     ]
+
+
+@pytest.fixture
+def companies():
+    return [Company(id=1, name='Test Company'), Company(id=2, name='Test Company')]
 
 
 @pytest_asyncio.fixture
