@@ -11,11 +11,18 @@ class DbBaseManager:
             self._spawn_session()
 
     def __del__(self):
+        """Метод блокирующий цикл событий. Не полагаться на него"""
         loop = asyncio.get_event_loop()
         if loop.is_running():
             loop.create_task(self.session.close())
         else:
             loop.run_until_complete(self.session.close())
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.session.close()
 
     def _spawn_session(self):
         if self.engine:

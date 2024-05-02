@@ -8,6 +8,7 @@ from loguru import logger
 
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.helpers import ApiError
+from energoatlas.database import AsyncSessionMaker
 from energoatlas.managers import ApiManager, UserManager
 from energoatlas.models.background import TelegramMessageParams
 
@@ -28,7 +29,8 @@ class AuthValidationMiddleware(BaseMiddleware):
     ) -> Any:
         api_manager: ApiManager = data['api_manager']
         state: FSMContext = data['state']
-        user_manager = UserManager(api_manager)
+        session = AsyncSessionMaker()
+        user_manager = UserManager(api_manager, session=session)
         data['user_manager'] = user_manager
 
         if await state.get_state() == Auth.authorized:
@@ -51,6 +53,7 @@ class AuthValidationMiddleware(BaseMiddleware):
                     await state.update_data(login=login, password=password)
 
         await handler(event, data)
+        await session.close()
 
 
 class ApiErrorHandlerMiddleware(BaseMiddleware):
