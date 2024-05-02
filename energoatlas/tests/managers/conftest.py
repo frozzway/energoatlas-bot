@@ -7,22 +7,14 @@ from sqlalchemy import NullPool
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
+from energoatlas.models.background import Device
 from energoatlas.settings import settings
 from energoatlas.tables import Base, UserTable, UserDeviceTable
-from energoatlas.managers import ApiManager, LogManager
-
-
-@pytest.fixture
-def mock_response(mocker: MockFixture):
-    response = mocker.Mock()
-    response.status_code = 200
-    response.raise_for_status.return_value = None
-    return response
+from energoatlas.managers import ApiManager, LogManager, UserManager
 
 
 @pytest.fixture
 def api_manager(mocker: MockFixture):
-    # Создание экземпляра ApiManager с клиентом
     client = mocker.Mock()
     manager = ApiManager(client)
     manager.client.get = mocker.AsyncMock()
@@ -31,9 +23,16 @@ def api_manager(mocker: MockFixture):
 
 
 @pytest.fixture
-def log_manager(api_manager):
+def log_manager(api_manager, test_session):
     with patch.object(LogManager, '__del__', MagicMock()):
-        manager = LogManager(api_manager)
+        manager = LogManager(api_manager, session=test_session)
+        yield manager
+
+
+@pytest.fixture
+def user_manager(api_manager, test_session):
+    with patch.object(UserManager, '__del__', MagicMock()):
+        manager = UserManager(api_manager, session=test_session)
         yield manager
 
 
@@ -63,6 +62,16 @@ async def test_session(test_engine):
     session = AsyncSession(bind=test_engine, expire_on_commit=False)
     yield session
     await session.close()
+
+
+@pytest.fixture
+def devices():
+    return [
+        Device.model_construct(id=0),
+        Device.model_construct(id=1),
+        Device.model_construct(id=2),
+        Device.model_construct(id=3),
+    ]
 
 
 @pytest_asyncio.fixture

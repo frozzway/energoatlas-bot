@@ -5,10 +5,8 @@ import pytest
 from dateutil.relativedelta import relativedelta as rd
 from pytest_mock import MockerFixture
 
-import energoatlas.managers
-import energoatlas.database
 from energoatlas.models.aiogram import Company
-from energoatlas.models.background import Device, DeviceWithLogs, Log, DeviceDict
+from energoatlas.models.background import DeviceWithLogs, Log, DeviceDict
 from energoatlas.settings import settings
 from energoatlas.tables import LogTable
 
@@ -21,16 +19,6 @@ dt3 = dt2 + rd(days=1)
 @pytest.fixture
 def companies():
     return [Company(id=1, name='Test Company'), Company(id=2, name='Test Company')]
-
-
-@pytest.fixture
-def devices():
-    return [
-        Device.model_construct(id=0),
-        Device.model_construct(id=1),
-        Device.model_construct(id=2),
-        Device.model_construct(id=3),
-    ]
 
 
 @pytest.fixture
@@ -59,16 +47,16 @@ def logs():
 
 @pytest.mark.asyncio
 async def test_get_tracked_devices(log_manager, devices, companies, mocker: MockerFixture):
-    log_manager.api_manager.get_user_companies = mocker.AsyncMock(return_value=companies)
+    mocker.patch.object(log_manager.api_manager, 'get_user_companies', new=mocker.AsyncMock(return_value=companies))
 
     # Набор устройств, полученных по API Энергоатлас
-    energoatlas.managers.ApiManager.get_user_devices = mocker.AsyncMock(side_effect=[
+    mocker.patch.object(log_manager.api_manager, 'get_user_devices', new=mocker.AsyncMock(side_effect=[
         {devices[0], devices[1]},
         {devices[2], devices[3]},
-    ])
+    ]))
 
     # Идентификаторы устройств, по которым ведется отслеживание
-    log_manager._get_tracked_devices_ids = mocker.AsyncMock(return_value=[0, 2])
+    mocker.patch.object(log_manager, '_get_tracked_devices_ids', new=mocker.AsyncMock(return_value=[0, 2]))
 
     result = await log_manager._get_tracked_devices('token')
 
@@ -104,7 +92,7 @@ async def test_get_subscribed_telegram_ids_makes_correct_dict(log_manager, mocke
         mocker.MagicMock(device_id=300, telegram_ids=[4, 5])
     ]
     result_mocked = mocker.MagicMock(all=mocker.Mock(return_value=test_data))
-    log_manager.session.execute = mocker.AsyncMock(return_value=result_mocked)
+    mocker.patch.object(log_manager.session, 'execute', return_value=result_mocked)
 
     result = await log_manager.get_subscribed_telegram_ids(device_ids)
 
@@ -113,9 +101,7 @@ async def test_get_subscribed_telegram_ids_makes_correct_dict(log_manager, mocke
 
 
 @pytest.mark.asyncio
-async def test_get_subscribed_telegram_ids_db_call(log_manager, user_devices, test_session):
-    log_manager.session = test_session
-
+async def test_get_subscribed_telegram_ids_db_call(log_manager, user_devices):
     result = await log_manager.get_subscribed_telegram_ids([100, 200, 300])
 
     expected_result = {100: [1, 2, 3], 200: [1, 2], 300: [1]}
@@ -123,9 +109,7 @@ async def test_get_subscribed_telegram_ids_db_call(log_manager, user_devices, te
 
 
 @pytest.mark.asyncio
-async def test_get_tracked_devices_ids(log_manager, user_devices, test_session):
-    log_manager.session = test_session
-
+async def test_get_tracked_devices_ids(log_manager, user_devices):
     result = await log_manager._get_tracked_devices_ids()
 
     expected_result = set(d.device_id for d in user_devices)
@@ -149,8 +133,8 @@ async def test_get_devices_logs(log_manager, logs, devices, mocker: MockerFixtur
         future.set_result(response)
 
     mocker.patch('asyncio.as_completed', return_value=mocked_futures)
-    DeviceWithLogs.model_validate = mocker.Mock()
-    log_manager.api_manager.get_limit_logs = mocker.Mock()
+    mocker.patch.object(DeviceWithLogs, 'model_validate')
+    mocker.patch.object(log_manager.api_manager, 'get_limit_logs')
 
     result = await log_manager._get_devices_logs(DeviceDict(devices), 'test_token')
 
@@ -163,7 +147,7 @@ async def test_get_devices_logs(log_manager, logs, devices, mocker: MockerFixtur
 @pytest.mark.asyncio
 async def test_notify_telegram_users(log_manager, devices, logs, mocker: MockerFixture):
     subscribed_telegram_ids = {0: [10, 20, 30], 1: [10, 20], 2: [10], 3: [20, 30]}
-    log_manager.get_subscribed_telegram_ids = mocker.AsyncMock(return_value=subscribed_telegram_ids)
+    mocker.patch.object(log_manager, 'get_subscribed_telegram_ids', new=mocker.AsyncMock(return_value=subscribed_telegram_ids))
     devices = [DeviceWithLogs(device=d, logs=logs) for d in devices]
     user_devices = {
         10: [devices[0], devices[1], devices[2]],

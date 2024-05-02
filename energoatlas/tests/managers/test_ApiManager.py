@@ -1,9 +1,18 @@
 import pytest
 from httpx import Response, Request
+from pytest_mock import MockFixture
 
 from energoatlas.models.background import Device, Log
 from energoatlas.models.aiogram import Company, Object, Parameter
 from energoatlas.models.aiogram import Device as ObjectDevice
+
+
+@pytest.fixture
+def mock_response(mocker: MockFixture):
+    response = mocker.Mock()
+    response.status_code = 200
+    response.raise_for_status.return_value = None
+    return response
 
 
 @pytest.mark.asyncio
