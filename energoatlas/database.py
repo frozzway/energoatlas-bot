@@ -28,10 +28,5 @@ async_url_object = URL.create(
 engine = create_engine(url_object)
 main_thread_async_engine = create_async_engine(async_url_object)
 
-
-def spawn_async_engine() -> AsyncEngine:
-    return create_async_engine(async_url_object)
-
-
 SessionMaker = sessionmaker(engine)
 AsyncSessionMaker = async_sessionmaker(main_thread_async_engine, expire_on_commit=False)
