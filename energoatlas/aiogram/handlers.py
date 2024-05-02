@@ -9,6 +9,7 @@ from aiogram_extensions.paginator import PaginatedKeyboard
 
 from energoatlas.aiogram.callbacks import MainMenu, CompaniesForm, ObjectsForm, DevicesForm, DeviceView
 from energoatlas.aiogram.states import Auth
+from energoatlas.aiogram.middlewares import MessageEraserMiddleware
 from energoatlas.managers import ApiManager
 from energoatlas.settings import settings
 
@@ -16,6 +17,7 @@ from energoatlas.settings import settings
 main_menu = InlineKeyboardBuilder()
 main_menu.button(text='Главное меню', callback_data=MainMenu())
 router = Router(name='main')
+router.message.middleware(MessageEraserMiddleware())
 
 
 @router.message(Auth.authorized, Command('menu'))
@@ -34,7 +36,7 @@ async def render_main_menu(event: Message | CallbackQuery):
             reply_markup=keyboard.as_markup())
 
     elif isinstance(event, Message):
-        await event.answer(
+        return await event.answer(
             text=text,
             reply_markup=keyboard.as_markup()
         )

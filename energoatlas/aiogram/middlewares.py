@@ -78,3 +78,22 @@ class TelegramApiErrorHandlerMiddleware(BaseMiddleware):
                 logger.warning(f'[Telegram API] {exc.message}')
             else:
                 raise exc
+
+
+class MessageEraserMiddleware(BaseMiddleware):
+    async def __call__(
+            self,
+            handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
+            event: Message,
+            data: dict[str, Any]
+    ) -> Any:
+        state: FSMContext = data['state']
+        data = await state.get_data()
+        if last_message := data.get('last_message'):
+            try:
+                await last_message.delete()
+            except Exception:
+                pass
+        message = await handler(event, data)
+        await state.update_data(last_message=message)
+
