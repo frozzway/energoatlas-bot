@@ -9,7 +9,7 @@ import energoatlas.managers
 import energoatlas.database
 from energoatlas.models.aiogram import Company
 from energoatlas.models.background import Device, DeviceWithLogs, Log
-from energoatlas.tables import LogTable, UserDeviceTable
+from energoatlas.tables import LogTable
 
 
 dt1 = datetime.now()
