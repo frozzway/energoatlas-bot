@@ -68,9 +68,11 @@ async def render_companies_list(
         keyboard.button(text=company.name, callback_data=ObjectsForm(company_id=company.id))
     keyboard.adjust(1, 1)
 
+    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text)
+
     await query.message.edit_text(
         text=text,
-        reply_markup=keyboard.attach(main_menu).as_markup())
+        reply_markup=keyboard.first_page())
 
 
 @router.callback_query(Auth.authorized, ObjectsForm.filter())
@@ -104,9 +106,11 @@ async def render_objects_list(
         keyboard.button(text=button_text, callback_data=DevicesForm(object_id=item.id, company_id=company_id))
     keyboard.adjust(1, 1)
 
+    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text)
+
     await query.message.edit_text(
         text=text,
-        reply_markup=keyboard.attach(main_menu).as_markup())
+        reply_markup=keyboard.first_page())
 
 
 @router.callback_query(Auth.authorized, DevicesForm.filter())
