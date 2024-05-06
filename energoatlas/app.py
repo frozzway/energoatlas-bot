@@ -6,7 +6,7 @@ from aioshedule import Scheduler
 from loguru import logger
 
 from energoatlas.aiogram import router as app_router
-from energoatlas.aiogram.middlewares import AuthValidationMiddleware, TelegramApiErrorHandlerMiddleware
+from energoatlas.aiogram.middlewares import *
 from energoatlas.dependencies import http_client
 from energoatlas.database import main_thread_async_engine
 from energoatlas.tables import Base
@@ -17,6 +17,9 @@ from energoatlas.managers import UserManager, LogManager, ApiManager
 router = Router(name=__name__)
 router.include_router(paginator_router)
 router.include_router(app_router)
+
+router.message.outer_middleware(DependencyInjectionMiddleware())
+router.callback_query.outer_middleware(DependencyInjectionMiddleware())
 
 router.message.outer_middleware(AuthValidationMiddleware())
 router.callback_query.outer_middleware(AuthValidationMiddleware())

@@ -14,6 +14,24 @@ from energoatlas.managers import ApiManager, UserManager
 from energoatlas.models.background import TelegramMessageParams
 
 
+__all__ = ['DependencyInjectionMiddleware', 'AuthValidationMiddleware', 'TelegramApiErrorHandlerMiddleware',
+           'MessageEraserMiddleware']
+
+
+class DependencyInjectionMiddleware(BaseMiddleware):
+    async def __call__(
+            self,
+            handler: Callable[[Message | CallbackQuery, dict[str, Any]], Awaitable[Any]],
+            event: Message | CallbackQuery,
+            data: dict[str, Any]
+    ) -> Any:
+        api_manager: ApiManager = data['api_manager']
+        async with AsyncSessionMaker() as session:
+            user_manager = UserManager(api_manager, session=session)
+            data['user_manager'] = user_manager
+            await handler(event, data)
+
+
 async def get_auth_token(state: FSMContext, api_manager: ApiManager) -> str | None:
     state_data = await state.get_data()
     login, password = state_data.get('login'), state_data.get('password')
@@ -28,11 +46,9 @@ class AuthValidationMiddleware(BaseMiddleware):
         event: Message | CallbackQuery,
         data: dict[str, Any]
     ) -> Any:
-        api_manager: ApiManager = data['api_manager']
         state: FSMContext = data['state']
-        session = AsyncSessionMaker()
-        user_manager = UserManager(api_manager, session=session)
-        data['user_manager'] = user_manager
+        api_manager: ApiManager = data['api_manager']
+        user_manager: UserManager = data['user_manager']
 
         if await state.get_state() == Auth.authorized:
             try:
@@ -61,7 +77,6 @@ class AuthValidationMiddleware(BaseMiddleware):
                     await state.update_data(login=login, password=password)
 
         await handler(event, data)
-        await session.close()
 
 
 class TelegramApiErrorHandlerMiddleware(BaseMiddleware):
