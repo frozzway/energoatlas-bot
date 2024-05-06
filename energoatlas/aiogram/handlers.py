@@ -68,7 +68,8 @@ async def render_companies_list(
         keyboard.button(text=company.name, callback_data=ObjectsForm(company_id=company.id))
     keyboard.adjust(1, 1)
 
-    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text)
+    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text,
+                                              unique_name='Список организаций')
 
     await query.message.edit_text(
         text=text,
@@ -106,7 +107,8 @@ async def render_objects_list(
         keyboard.button(text=button_text, callback_data=DevicesForm(object_id=item.id, company_id=company_id))
     keyboard.adjust(1, 1)
 
-    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text)
+    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text,
+                                              unique_name='Список объектов')
 
     await query.message.edit_text(
         text=text,
@@ -140,7 +142,8 @@ async def render_devices_list(
                                                                 company_id=callback_data.company_id))
     keyboard.adjust(1, 1)
 
-    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text)
+    keyboard = await PaginatedKeyboard.create(keyboard=keyboard, state=state, post=main_menu, page_size=8, text=text,
+                                              unique_name='Список устройств')
 
     await query.message.edit_text(
         text=text,
