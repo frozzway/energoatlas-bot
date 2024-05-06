@@ -57,7 +57,6 @@ class UserManager(DbBaseManager):
         rows = [UserDeviceTable(device_id=device.id) for device in devices]
         self.session.add_all(rows)
         user.devices.add_all(rows)
-        await self.session.commit()
 
     async def update_all_users(self) -> None:
         """Обновить информацию по всем ранее авторизованным пользователям об относящихся к ним устройствах"""
@@ -65,6 +64,7 @@ class UserManager(DbBaseManager):
         users = await self._get_all_users()
         coroutines = [self.update_user(user) for user in users]
         await asyncio.gather(*coroutines)
+        await self.session.commit()
         logger.info('Обновлена информация по авторизованным пользователям')
 
     async def update_user(self, user: UserTable) -> None:

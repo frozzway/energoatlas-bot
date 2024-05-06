@@ -26,9 +26,9 @@ class DbBaseManager:
 
     def _spawn_session(self):
         if self.engine:
-            self.session = AsyncSession(expire_on_commit=False, bind=self.engine)
+            self.session = AsyncSession(expire_on_commit=False, bind=self.engine, autoflush=False)
         else:
-            self.session = AsyncSession(expire_on_commit=False, bind=main_thread_async_engine)
+            self.session = AsyncSession(expire_on_commit=False, bind=main_thread_async_engine, autoflush=False)
 
     async def refresh_session(self):
         await self.session.close()

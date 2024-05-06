@@ -10,6 +10,7 @@ def user(users):
 @pytest.mark.asyncio
 async def test_set_devices_for_user_adds_devices(user_manager, user, devices, test_session):
     await user_manager._set_devices_for_user(user, devices)
+    await user_manager.session.commit()
     set_devices = await test_session.scalars(user.devices.select())
     set_devices = list(set_devices)
 
@@ -20,8 +21,10 @@ async def test_set_devices_for_user_adds_devices(user_manager, user, devices, te
 @pytest.mark.asyncio
 async def test_set_devices_for_user_removes_devices(user_manager, user, devices, test_session):
     await user_manager._set_devices_for_user(user, devices)
+    await user_manager.session.commit()
 
     await user_manager._set_devices_for_user(user, devices[2:])
+    await user_manager.session.commit()
     set_devices = await test_session.scalars(user.devices.select())
     set_devices = list(set_devices)
 
