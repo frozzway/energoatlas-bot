@@ -2,6 +2,7 @@ from typing import Callable, Any, Awaitable
 
 import aiogram.exceptions
 from aiogram import BaseMiddleware
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from loguru import logger
@@ -103,11 +104,11 @@ class MessageEraserMiddleware(BaseMiddleware):
             data: dict[str, Any]
     ) -> Any:
         state: FSMContext = data['state']
-        data = await state.get_data()
-        if last_message := data.get('last_message'):
+        state_data = await state.get_data()
+        if last_message := state_data.get('last_message'):
             try:
                 await last_message.delete()
-            except Exception:
+            except TelegramAPIError:
                 pass
         message = await handler(event, data)
         await state.update_data(last_message=message)
