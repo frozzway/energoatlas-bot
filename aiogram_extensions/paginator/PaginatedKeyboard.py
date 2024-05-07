@@ -97,7 +97,9 @@ class PaginatedKeyboard:
     def _add_static_buttons(self, rows: list[list[InlineKeyboardButton]]):
         if self.pre:
             if buttons := self.pre.export():
-                rows.insert(0, buttons[0])
+                for row in reversed(buttons):
+                    rows.insert(0, row)
         if self.post:
             if buttons := self.post.export():
-                rows.append(buttons[0])
+                for row in buttons:
+                    rows.append(row)
