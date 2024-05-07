@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from functools import partial
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, BigInteger
 from sqlalchemy.orm import DeclarativeBase, relationship, Mapped
 from sqlalchemy.orm import WriteOnlyMapped, mapped_column
 
@@ -20,7 +20,7 @@ class UserTable(Base):
     """Таблица успешно авторизованных в системе "Энергоатлас" пользователей на момент авторизации в чат-боте"""
     __tablename__ = 'Users'
 
-    telegram_user_id: Mapped[int] = mapped_column(primary_key=True, comment="Идентификатор пользователя в Telegram")
+    telegram_user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="Идентификатор пользователя в Telegram")
     login: Mapped[str] = mapped_column(comment='Логин в системе "Энергоатлас"')
     password: Mapped[str] = mapped_column(comment='Пароль в системе "Энергоатлас"')
 
@@ -31,7 +31,7 @@ class LogTable(Base):
     """Таблица истории срабатывания аварийных критериев, по которым были отправлены уведомления пользователям"""
     __tablename__ = 'LimitLogs'
 
-    limit_id: Mapped[int] = mapped_column(comment='Идентификатор аварийного критерия устройства', primary_key=True)
+    limit_id: Mapped[int] = mapped_column(BigInteger, comment='Идентификатор аварийного критерия устройства', primary_key=True)
     latch_dt: Mapped[datetime] = mapped_column(comment='Время срабатывания аварийного критерия', primary_key=True)
 
     def __hash__(self):
@@ -46,6 +46,7 @@ class UserDeviceTable(Base):
     __tablename__ = 'UserDevices'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    telegram_user_id: Mapped[int] = mapped_column(ForeignKey('Users.telegram_user_id', ondelete='cascade'), comment="Идентификатор пользователя в Telegram")
-    device_id: Mapped[int] = mapped_column(comment='Идентификатор устройства')
+    telegram_user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('Users.telegram_user_id', ondelete='cascade'),
+                                                  comment="Идентификатор пользователя в Telegram")
+    device_id: Mapped[int] = mapped_column(BigInteger, comment='Идентификатор устройства')
 
