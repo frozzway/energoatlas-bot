@@ -50,7 +50,7 @@ def api_call(handle_errors: bool = False, log_level=logging.ERROR, target_api_pr
                     try:
                         return await func(*args, **kwargs)
                     except httpx.HTTPStatusError as exc:
-                        logger.log(log_level, f'[{target_api_prefix}] HTTP error {exc.response.status_code} - {exc.response.reason_phrase} on url {exc.request.url}')
+                        logger.log(log_level, f'[{target_api_prefix}] HTTP error {exc.response.status_code} - {exc.response.reason_phrase} on url {exc.request.url} with text: {exc.response.text}')
                         raise exc
                     except httpx.RequestError as exc:
                         logger.log(log_level, f'[{target_api_prefix}] {exc} {type(exc)}'.strip())
