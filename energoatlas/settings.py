@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     telegram_api_base: str = 'https://api.telegram.org/bot'
     telegram_api_url: str = f'{telegram_api_base}{bot_token}'
 
-    admin_login: str = ''
-    admin_password: str = ''
+    admin_login: str = 'admin@example.com'
+    admin_password: str = 'Jb21uHa73omYia'
 
     device_params_descr: list[str] = ['Связь', 'Уровень заряда батареи', 'Количество дыма', 'Влажность']
 
