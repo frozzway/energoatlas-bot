@@ -25,10 +25,13 @@ router.message.middleware(MessageEraserMiddleware())
 @router.callback_query(Auth.authorized, MainMenu.filter())
 async def render_main_menu(event: Message | CallbackQuery):
     """Отобразить главное меню"""
-    text = 'Контакты технической поддержки'
+    text = (
+        'Вы подписаны на рассылку сообщений о возникновении событий, аварийных ситуаций, их устранении из Системы '
+        '«Энергоатлас».'
+    )
 
     keyboard = InlineKeyboardBuilder()
-    btn_text = 'Получить информацию о текущем состоянии параметров устройств'
+    btn_text = 'Состояние параметров устройств'
     keyboard.button(text=btn_text, callback_data=CompaniesForm())
 
     if isinstance(event, CallbackQuery):
