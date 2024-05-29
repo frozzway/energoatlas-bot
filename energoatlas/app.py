@@ -50,6 +50,8 @@ async def run_scheduled_tasks(api_manager: ApiManager, dispatcher: Dispatcher):
 
     logger.info('Started background tasks...')
 
+    await schedule.run_all()
+
     while True:
         await schedule.run_pending()
         await asyncio.sleep(1)
