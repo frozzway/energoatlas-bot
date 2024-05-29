@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     admin_login: str = ''
     admin_password: str = ''
 
-    device_params_descr: list[str] = ['Связь', 'Уровень заряда батареи', 'Количество дыма']
+    device_params_descr: list[str] = ['Связь', 'Уровень заряда батареи', 'Количество дыма', 'Влажность']
 
     targeted_logs: list[str] = [
         'Протечка',

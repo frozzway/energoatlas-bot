@@ -1,4 +1,5 @@
 from energoatlas.models.background import DeviceWithLogs, TelegramMessageParams
+from energoatlas.models.aiogram import Parameter
 
 
 class MessageFormatter:
@@ -16,6 +17,19 @@ class MessageFormatter:
             body = '\n\n'.join(messages)
             items.append(header + body)
         return TelegramMessageParams(text="\n\n".join(items), parse_mode='MarkdownV2')
+
+    @staticmethod
+    def device_params_message(device_name: str, device_params: list[Parameter]) -> TelegramMessageParams:
+        text = f'__*{MessageFormatter.escape_markdown(device_name)}*__'
+        for param in device_params:
+            if param.measurement == 'bool':
+                param_text = f'\n{param.descr}: {"Да" if param.val == 1 else "Нет"}'
+            elif param.measurement in ['int', 'float']:
+                param_text = f'\n{param.descr}: {param.val}'
+            else:
+                param_text = f'\n{param.descr}: {param.val} {param.measurement}'
+            text += MessageFormatter.escape_markdown(param_text)
+        return TelegramMessageParams(text=text, parse_mode='MarkdownV2')
 
     @staticmethod
     def escape_markdown(text: str) -> str:

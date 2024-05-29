@@ -10,7 +10,8 @@ from aiogram_extensions.paginator import PaginatedKeyboard
 from energoatlas.aiogram.callbacks import MainMenu, CompaniesForm, ObjectsForm, DevicesForm, DeviceView
 from energoatlas.aiogram.states import Auth
 from energoatlas.aiogram.middlewares import MessageEraserMiddleware
-from energoatlas.managers import ApiManager
+from energoatlas.managers import ApiManager, MessageFormatter
+from energoatlas.models.aiogram import Device
 from energoatlas.settings import settings
 
 
@@ -161,14 +162,17 @@ async def render_device_view(
     """Отобразить параметры выбранного устройства"""
     try:
         device_params = await api_manager.get_device_status(callback_data.device_id, auth_token)
+        devices = await api_manager.get_object_devices(callback_data.object_id, auth_token)
     except HTTPError:
         await query.answer(text=settings.api_error_message)
         return await render_objects_list(query=query, state=state, auth_token=auth_token, api_manager=api_manager,
                                          callback_data=ObjectsForm(company_id=callback_data.company_id))
 
+    device: Device = next(filter(lambda d: d.id == callback_data.device_id, devices))
+    device_name = f'{device.name} ({device.type})'
     device_params = [param for param in device_params if param.descr in settings.device_params_descr]
 
-    text = '\n'.join(repr(p) for p in device_params)
+    message_params = MessageFormatter.device_params_message(device_name, device_params)
 
     keyboard = InlineKeyboardBuilder()
     if paginated_keyboard := await PaginatedKeyboard.last_opened(state):
@@ -179,5 +183,6 @@ async def render_device_view(
     keyboard.adjust(1, 1)
 
     await query.message.edit_text(
-        text=text,
+        text=message_params.text,
+        parse_mode=message_params.parse_mode,
         reply_markup=keyboard.attach(main_menu).as_markup())
