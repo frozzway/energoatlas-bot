@@ -11,7 +11,6 @@ from energoatlas.tables import UserTable, UserDeviceTable
 from energoatlas.models.background import ItemWithId, TelegramMessageParams
 from energoatlas.managers._ApiManager import ApiManager
 from energoatlas.managers._DbBaseManager import DbBaseManager
-from energoatlas.utils import database_call
 
 
 class UserManager(DbBaseManager):
@@ -22,7 +21,6 @@ class UserManager(DbBaseManager):
         self.bot = bot
         self.dispatcher = dispatcher
 
-    @database_call
     async def get_user_credentials(self, telegram_id: int) -> tuple[str, str] | None:
         """Получить учетные данные для авторизации в API Энергоатлас из базы данных"""
         statement = select(UserTable).where(UserTable.telegram_user_id == telegram_id)
@@ -30,14 +28,12 @@ class UserManager(DbBaseManager):
         if user:
             return user.login, user.password
 
-    @database_call
     async def remove_user(self, telegram_id: int) -> None:
         """Удалить учетные данные для авторизации в API Энергоатлас из базы данных"""
         statement = delete(UserTable).where(UserTable.telegram_user_id == telegram_id)
         await self.session.execute(statement)
         await self.session.commit()
 
-    @database_call
     async def add_user(self, telegram_id: int, login: str, password: str) -> UserTable:
         """Добавить учетные данные для авторизации в API Энергоатлас пользователя Telegram в базу данных"""
         user = UserTable(telegram_user_id=telegram_id, login=login, password=password)
@@ -45,12 +41,10 @@ class UserManager(DbBaseManager):
         await self.session.commit()
         return user
 
-    @database_call
     async def _get_all_users(self) -> list[UserTable]:
         users = await self.session.scalars(select(UserTable))
         return list(users)
 
-    @database_call
     async def _set_devices_for_user(self, user: UserTable, devices: Iterable[ItemWithId]):
         """Установить пользователю относящиеся к нему устройства"""
         await self.session.execute(delete(UserDeviceTable).where(UserDeviceTable.telegram_user_id == user.telegram_user_id))

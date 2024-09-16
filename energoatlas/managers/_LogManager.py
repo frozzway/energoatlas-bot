@@ -9,7 +9,7 @@ from httpx import HTTPError
 from energoatlas.models.background import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
 from energoatlas.managers import ApiManager, DbBaseManager, MessageFormatter
-from energoatlas.utils import database_call, yesterday, strip_log
+from energoatlas.utils import yesterday, strip_log
 from energoatlas.settings import settings
 
 
@@ -34,7 +34,6 @@ class LogManager(DbBaseManager):
         else:
             logger.error('Не удалось получить токен авторизации администратора в API Энергоатлас')
 
-    @database_call
     async def get_subscribed_telegram_ids(self, device_ids: Iterable[int]) -> dict[int, list[int]]:
         """Получить по каждому из устройств идентификаторы пользователей в telegram, куда отправлять уведомления о
         срабатывании аварийных критериев
@@ -52,21 +51,18 @@ class LogManager(DbBaseManager):
         rows = await self.session.execute(statement)
         return {row.device_id: row.telegram_ids for row in rows.all()}
 
-    @database_call
     async def get_notified_logs(self) -> set[LogTable]:
         """Получить историю срабатывания аварийных критериев, по которым уже производились уведомления (из базы данных)
         за последние два дня"""
         logs = await self.session.scalars(select(LogTable).where(LogTable.latch_dt >= yesterday()))
         return set(logs)
 
-    @database_call
     async def _get_tracked_devices_ids(self) -> list[int]:
         """Получить идентификаторы устройств, по которым проверяется история срабатываний аварийных критериев"""
         statement = select(UserDeviceTable.device_id).distinct()
         result = await self.session.scalars(statement)
         return list(result)
 
-    @database_call
     async def _save_new_logs(self, devices_logs: Iterable[DeviceWithLogs]) -> None:
         """Сохранить историю срабатываний аварийных критериев в базу данных"""
         for device in devices_logs:

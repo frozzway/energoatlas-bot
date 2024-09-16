@@ -59,13 +59,3 @@ def api_call(handle_errors: bool = False, log_level=logging.ERROR, target_api_pr
                     return await func(*args, **kwargs)
         return wrapped
     return wrapper
-
-
-def database_call(func):
-    """Декоратор для асинхронных атомарных методов, создающих объект сессии подключения к БД и, впоследствии,
-    использующих его. Применяет семафор для контролирования количества одновременных подключений к БД."""
-    @functools.wraps(func)
-    async def wrapped(*args, **kwargs):
-        async with db_semaphore:
-            return await func(*args, **kwargs)
-    return wrapped

@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import sessionmaker
@@ -26,7 +26,7 @@ async_url_object = URL.create(
 )
 
 engine = create_engine(url_object)
-main_thread_async_engine = create_async_engine(async_url_object)
+main_thread_async_engine = create_async_engine(async_url_object, pool_size=5, max_overflow=0, pool_timeout=3600)
 
 SessionMaker = sessionmaker(engine)
 AsyncSessionMaker = async_sessionmaker(main_thread_async_engine, expire_on_commit=False)
