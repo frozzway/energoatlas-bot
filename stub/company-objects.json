@@ -1,0 +1,917 @@
+[
+    {
+        "id": 229871,
+        "name": "Архивохранилище №1",
+        "address": "Свердловский проспект, 30А",
+        "latitude": "55.176398",
+        "longitude": "61.386662",
+        "can_manage": 0,
+        "devices": [
+            {
+                "id": 88584,
+                "name": "ДЗ 2/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88590,
+                "name": "ДЗ 3/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88591,
+                "name": "ДЗ 3/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 13,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88592,
+                "name": "ДЗ 4/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88593,
+                "name": "ДЗ 4/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88594,
+                "name": "ДЗ 5/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88595,
+                "name": "ДЗ 5/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88596,
+                "name": "ДЗ 6/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88597,
+                "name": "ДЗ 6/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88598,
+                "name": "ДЗ 7/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88599,
+                "name": "ДЗ 7/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88600,
+                "name": "ДЗ 8/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88585,
+                "name": "ДЗ 8/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88601,
+                "name": "ДЗ 9/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88602,
+                "name": "ДЗ 9/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 14,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88589,
+                "name": "Инклинометр ИН-ДЗ (НТП Горизонт)",
+                "title": "Устройство c Modbus RTU",
+                "time_offset": 0,
+                "nodes_count": "1"
+            },
+            {
+                "id": 88586,
+                "name": "МД 2/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1311,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88587,
+                "name": "МД 3/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1319,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88603,
+                "name": "МД 3/2",
+                "title": "SMART-UM0101",
+                "time_offset": 16,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88604,
+                "name": "МД 4/1",
+                "title": "SMART-UM0101",
+                "time_offset": -922,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88605,
+                "name": "МД 4/2",
+                "title": "SMART-UM0101",
+                "time_offset": -829,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88606,
+                "name": "МД 5/1",
+                "title": "SMART-UM0101",
+                "time_offset": -528,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88607,
+                "name": "МД 5/2",
+                "title": "SMART-UM0101",
+                "time_offset": -1072,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88608,
+                "name": "МД 6/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1014,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88609,
+                "name": "МД 6/2",
+                "title": "SMART-UM0101",
+                "time_offset": -631,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88610,
+                "name": "МД 7/1",
+                "title": "SMART-UM0101",
+                "time_offset": -619,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88611,
+                "name": "МД 7/2",
+                "title": "SMART-UM0101",
+                "time_offset": -1189,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88612,
+                "name": "МД 8/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1032,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88613,
+                "name": "МД 8/2",
+                "title": "SMART-UM0101",
+                "time_offset": -1242,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88614,
+                "name": "МД 9/1",
+                "title": "SMART-UM0101",
+                "time_offset": -646,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88615,
+                "name": "МД 9/2",
+                "title": "SMART-UM0101",
+                "time_offset": -750,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88588,
+                "name": "Шкаф автоматики",
+                "title": "Устройство c Modbus RTU",
+                "time_offset": 0,
+                "nodes_count": "12"
+            }
+        ]
+    },
+    {
+        "id": 241545,
+        "name": "МБУ 'Архив Златоустовского городского округа'",
+        "address": "площадь 3-го Интернационала, 5",
+        "latitude": "55.178630",
+        "longitude": "59.672560",
+        "can_manage": 0,
+        "devices": [
+            {
+                "id": 88698,
+                "name": "ДЗ 2/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88699,
+                "name": "ДЗ 2/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88700,
+                "name": "ДЗ 2/3",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88701,
+                "name": "ДЗ 2/4",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88702,
+                "name": "ДЗ 2/5",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88703,
+                "name": "ДЗ 3/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88704,
+                "name": "ДЗ 3/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88705,
+                "name": "ДЗ 3/3",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88706,
+                "name": "ДЗ 3/4",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88707,
+                "name": "ДЗ 3/5",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": -1440,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88708,
+                "name": "ДЗ 3/6",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88709,
+                "name": "ДЗ 3/7",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88710,
+                "name": "ДЗ 3/8",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88667,
+                "name": "КП 2/1",
+                "title": "СИ-22",
+                "time_offset": 0,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88668,
+                "name": "КП 2/2",
+                "title": "СИ-22",
+                "time_offset": -1089,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88669,
+                "name": "КП 2/3",
+                "title": "СИ-22",
+                "time_offset": -844,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88670,
+                "name": "КП 2/4",
+                "title": "СИ-22",
+                "time_offset": 0,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88671,
+                "name": "КП 3/1",
+                "title": "СИ-22",
+                "time_offset": -8,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88680,
+                "name": "КП 3/10",
+                "title": "СИ-22",
+                "time_offset": 1,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88681,
+                "name": "КП 3/11",
+                "title": "СИ-22",
+                "time_offset": -484,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88682,
+                "name": "КП 3/12",
+                "title": "СИ-22",
+                "time_offset": -164,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88683,
+                "name": "КП 3/13",
+                "title": "СИ-22",
+                "time_offset": -847,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88684,
+                "name": "КП 3/14",
+                "title": "СИ-22",
+                "time_offset": 1,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88672,
+                "name": "КП 3/2",
+                "title": "СИ-22",
+                "time_offset": -548,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88673,
+                "name": "КП 3/3",
+                "title": "СИ-22",
+                "time_offset": -876,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88674,
+                "name": "КП 3/4",
+                "title": "СИ-22",
+                "time_offset": -247,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88675,
+                "name": "КП 3/5",
+                "title": "СИ-22",
+                "time_offset": -954,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88676,
+                "name": "КП 3/6",
+                "title": "СИ-22",
+                "time_offset": -629,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88677,
+                "name": "КП 3/7",
+                "title": "СИ-22",
+                "time_offset": -1416,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88678,
+                "name": "КП 3/8",
+                "title": "СИ-22",
+                "time_offset": 1,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88679,
+                "name": "КП 3/9",
+                "title": "СИ-22",
+                "time_offset": -613,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88685,
+                "name": "МД 2/1",
+                "title": "SMART-UM0101",
+                "time_offset": -570,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88686,
+                "name": "МД 2/2",
+                "title": "SMART-UM0101",
+                "time_offset": -447,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88687,
+                "name": "МД 2/3",
+                "title": "SMART-UM0101",
+                "time_offset": -1182,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88688,
+                "name": "МД 2/4",
+                "title": "SMART-UM0101",
+                "time_offset": -935,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88689,
+                "name": "МД 2/5",
+                "title": "SMART-UM0101",
+                "time_offset": -702,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88690,
+                "name": "МД 3/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1059,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88691,
+                "name": "МД 3/2",
+                "title": "SMART-UM0101",
+                "time_offset": -1216,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88692,
+                "name": "МД 3/3",
+                "title": "SMART-UM0101",
+                "time_offset": -560,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88693,
+                "name": "МД 3/4",
+                "title": "SMART-UM0101",
+                "time_offset": -1177,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88694,
+                "name": "МД 3/5",
+                "title": "SMART-UM0101",
+                "time_offset": -454,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88695,
+                "name": "МД 3/6",
+                "title": "SMART-UM0101",
+                "time_offset": -683,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88696,
+                "name": "МД 3/7",
+                "title": "SMART-UM0101",
+                "time_offset": -806,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88697,
+                "name": "МД 3/8",
+                "title": "SMART-UM0101",
+                "time_offset": -1245,
+                "nodes_count": "2"
+            }
+        ]
+    },
+    {
+        "id": 241546,
+        "name": "Городской архив г. Магнитогорска",
+        "address": "проспект Ленина, 12",
+        "latitude": "53.431215",
+        "longitude": "58.983220",
+        "can_manage": 0,
+        "devices": [
+            {
+                "id": 88654,
+                "name": "ДЗ 2/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88655,
+                "name": "ДЗ 2/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88656,
+                "name": "ДЗ 2/3",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": -28555819,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88657,
+                "name": "ДЗ 2/4",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88658,
+                "name": "ДЗ 2/5",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88659,
+                "name": "ДЗ 2/6",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88660,
+                "name": "ДЗ 2/7",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": -1,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88661,
+                "name": "ДЗ 3/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88662,
+                "name": "ДЗ 3/2",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": -1440,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88663,
+                "name": "ДЗ 3/3",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88664,
+                "name": "ДЗ 3/4",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88665,
+                "name": "ДЗ 3/5",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88666,
+                "name": "ДЗ 3/6",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88630,
+                "name": "КП 2/1",
+                "title": "СИ-22",
+                "time_offset": -1371,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88631,
+                "name": "КП 2/2",
+                "title": "СИ-22",
+                "time_offset": -160,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88632,
+                "name": "КП 2/3",
+                "title": "СИ-22",
+                "time_offset": -33,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88633,
+                "name": "КП 2/4",
+                "title": "СИ-22",
+                "time_offset": -751,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88634,
+                "name": "КП 2/5",
+                "title": "СИ-22",
+                "time_offset": -867,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88635,
+                "name": "КП 2/6",
+                "title": "СИ-22",
+                "time_offset": -552,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88636,
+                "name": "КП 2/7",
+                "title": "СИ-22",
+                "time_offset": -238,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88637,
+                "name": "КП 3/1",
+                "title": "СИ-22",
+                "time_offset": -203,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88638,
+                "name": "КП 3/2",
+                "title": "СИ-22",
+                "time_offset": -1395,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88639,
+                "name": "КП 3/3",
+                "title": "СИ-22",
+                "time_offset": -580,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88640,
+                "name": "КП 3/4",
+                "title": "СИ-22",
+                "time_offset": -546,
+                "nodes_count": "5"
+            },
+            {
+                "id": 88641,
+                "name": "МД 2/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1070,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88642,
+                "name": "МД 2/2",
+                "title": "SMART-UM0101",
+                "time_offset": -1021,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88643,
+                "name": "МД 2/3",
+                "title": "SMART-UM0101",
+                "time_offset": -1182,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88644,
+                "name": "МД 2/4",
+                "title": "SMART-UM0101",
+                "time_offset": -239,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88645,
+                "name": "МД 2/5",
+                "title": "SMART-UM0101",
+                "time_offset": -327,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88646,
+                "name": "МД 2/6",
+                "title": "SMART-UM0101",
+                "time_offset": -901,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88647,
+                "name": "МД 2/7",
+                "title": "SMART-UM0101",
+                "time_offset": -792,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88648,
+                "name": "МД 3/1",
+                "title": "SMART-UM0101",
+                "time_offset": -825,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88649,
+                "name": "МД 3/2",
+                "title": "SMART-UM0101",
+                "time_offset": -633,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88650,
+                "name": "МД 3/3",
+                "title": "SMART-UM0101",
+                "time_offset": -343,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88651,
+                "name": "МД 3/4",
+                "title": "SMART-UM0101",
+                "time_offset": -1430,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88652,
+                "name": "МД 3/5",
+                "title": "SMART-UM0101",
+                "time_offset": -786,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88653,
+                "name": "МД 3/6",
+                "title": "SMART-UM0101",
+                "time_offset": -280,
+                "nodes_count": "2"
+            }
+        ]
+    },
+    {
+        "id": 241547,
+        "name": "Архивохранилище №2",
+        "address": "улица Коммуны, 87",
+        "latitude": "55.161821",
+        "longitude": "61.397721",
+        "can_manage": 0,
+        "devices": [
+            {
+                "id": 88624,
+                "name": "ДЗ 2/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88625,
+                "name": "ДЗ 3/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88626,
+                "name": "ДЗ 4/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88627,
+                "name": "ДЗ 5/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88628,
+                "name": "ДЗ 6/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": 0,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88629,
+                "name": "ДЗ 7/1",
+                "title": "Датчик дыма Stemax Livi FS",
+                "time_offset": -28443562,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88618,
+                "name": "МД 2/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1055,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88619,
+                "name": "МД 3/1",
+                "title": "SMART-UM0101",
+                "time_offset": -1352,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88620,
+                "name": "МД 4/1",
+                "title": "SMART-UM0101",
+                "time_offset": -30,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88621,
+                "name": "МД 5/1",
+                "title": "SMART-UM0101",
+                "time_offset": -678,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88622,
+                "name": "МД 6/1",
+                "title": "SMART-UM0101",
+                "time_offset": -765,
+                "nodes_count": "2"
+            },
+            {
+                "id": 88623,
+                "name": "МД 7/1",
+                "title": "SMART-UM0101",
+                "time_offset": -766,
+                "nodes_count": "2"
+            }
+        ]
+    }
+]
