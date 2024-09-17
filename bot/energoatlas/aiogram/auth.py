@@ -45,6 +45,7 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
             await state.update_data(password=message.text)
             user = await user_manager.add_user(telegram_id=message.from_user.id, login=login, password=password)
             await user_manager.update_user(user)
+            await user_manager.session.commit()
             await state.set_state(Auth.authorized)
             await message.answer(text='Вы успешно подписаны на получение уведомлений')
             return await render_main_menu(message)
