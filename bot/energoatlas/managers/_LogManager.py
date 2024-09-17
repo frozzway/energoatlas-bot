@@ -32,7 +32,7 @@ class LogManager(DbBaseManager):
             await self._save_new_logs(logs_to_notify)
             logger.info('Успешно запрошены логи срабатываний аварийных критериев с API Энергоатлас')
         else:
-            logger.error('Не удалось получить токен авторизации администратора в API Энергоатлас')
+            logger.critical('Не удалось получить токен авторизации администратора в API Энергоатлас')
 
     async def get_subscribed_telegram_ids(self, device_ids: Iterable[int]) -> dict[int, list[int]]:
         """Получить по каждому из устройств идентификаторы пользователей в telegram, куда отправлять уведомления о

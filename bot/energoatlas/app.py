@@ -1,9 +1,11 @@
 import asyncio
 
 from aiogram import Dispatcher, Bot, Router
+from elasticsearch import AsyncElasticsearch
+from loguru import logger
+
 from aiogram_extensions.paginator import router as paginator_router
 from aioshedule import Scheduler
-from loguru import logger
 
 from energoatlas.aiogram import router as app_router
 from energoatlas.aiogram.middlewares import *
@@ -26,6 +28,8 @@ router.callback_query.outer_middleware(AuthValidationMiddleware())
 router.callback_query.middleware(TelegramApiErrorHandlerMiddleware())
 
 bot = Bot(token=settings.bot_token)
+
+es = AsyncElasticsearch(hosts=[settings.elasticsearch_url], basic_auth=(settings.elasticsearch_username, settings.elasticsearch_password))
 
 
 async def on_startup(dispatcher: Dispatcher):
@@ -68,5 +72,17 @@ async def main():
     await on_startup(dispatcher)
 
 
-if __name__ == '__main__':
-    asyncio.run(main())
+def handle_task_exception(_, context):
+    exception = context.get("exception")
+    if exception:
+        logger.opt(exception=exception).error("Uncaught Exception (from asyncio Task)")
+    else:
+        logger.error(f"Uncaught Exception (from asyncio Task): {context}")
+
+
+def custom_excepthook(exc_type, exc_value, exc_traceback):
+    logger.opt(exception=(exc_type, exc_value, exc_traceback)).error("Uncaught Exception")
+
+
+async def send_log_to_elastic(message):
+    await es.index(index=f'{settings.elasticsearch_template}-{settings.elasticsearch_status}', body=message)

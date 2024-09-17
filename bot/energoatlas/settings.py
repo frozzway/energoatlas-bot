@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     telegram_api_base: str = 'https://api.telegram.org/bot'
     telegram_api_url: str = f'{telegram_api_base}{bot_token}'
 
+    elasticsearch_url: str = 'http://elastic:80'
+    elasticsearch_username: str = 'elasticUsername'
+    elasticsearch_password: str = 'elasticPassword'
+    elasticsearch_template: str = 'energoatlas_bot'
+    elasticsearch_status: str = 'dev'
+    elasticsearch_enable: bool = False
+
     admin_login: str = 'admin@example.com'
     admin_password: str = 'Jb21uHa73omYia'
 

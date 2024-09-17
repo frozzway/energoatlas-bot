@@ -76,4 +76,4 @@ class UserManager(DbBaseManager):
             params = TelegramMessageParams(text=settings.need_authorize_message)
             await self.api_manager.send_telegram_message(chat_id=chat_id, message_params=params)
             await self.remove_user(user.telegram_user_id)
-            logger.info(f'Удален пользователь с telegram_id {chat_id} из таблицы авторизованных пользователей')
+            logger.success(f'Удален пользователь с telegram_id {chat_id} из таблицы авторизованных пользователей')
