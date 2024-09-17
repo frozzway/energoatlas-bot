@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     bot_token: str = 'specify-your-token'
     telegram_api_base: str = 'https://api.telegram.org/bot'
-    telegram_api_url: str = f'{telegram_api_base}{bot_token}'
+    telegram_api_url: str = ''
 
     elasticsearch_url: str = 'http://elastic:80'
     elasticsearch_username: str = 'elasticUsername'
@@ -60,3 +60,5 @@ settings = Settings(
     _env_file='.env',
     _env_file_encoding='utf-8',
 )
+
+settings.telegram_api_url = f'{settings.telegram_api_base}{settings.bot_token}'
