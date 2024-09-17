@@ -59,7 +59,7 @@ async def authorize_user(message: Message, state: FSMContext, api_manager: ApiMa
 @router.message(Command('logout'))
 async def logout(message: Message, state: FSMContext, user_manager: UserManager):
     if await state.get_state() == Auth.authorized:
-        logger.info(f'Пользователь с telegram_id {message.from_user.id} выполнил /logout')
+        logger.success(f'Пользователь с telegram_id {message.from_user.id} выполнил /logout')
         await state.clear()
         await user_manager.remove_user(telegram_id=message.from_user.id)
         await message.answer('Вы отписаны от получения уведомлений. Авторизуйтесь повторно с помощью /start')
