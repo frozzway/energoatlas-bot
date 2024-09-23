@@ -53,7 +53,7 @@ def get_limit_logs(id: int, start_dt: datetime, end_dt: datetime):
         return JSONResponse([
             {
                 "limit_id": random.randint(10000, 100000),
-                "latch_dt": datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+                "latch_dt": datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S"),
                 "latch_message": latch_messages[random.randint(0, len(latch_messages) - 1)]
             }
         ])
