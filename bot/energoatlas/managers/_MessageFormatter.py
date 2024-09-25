@@ -26,6 +26,8 @@ class MessageFormatter:
                 param_text = f'\n{param.descr}: {"Да" if param.val == 1 else "Нет"}'
             elif param.measurement in ['int', 'float']:
                 param_text = f'\n{param.descr}: {param.val}'
+            elif param.measurement == '&#176;C':
+                param_text = f'\n{param.descr}: {param.val} °C'
             else:
                 param_text = f'\n{param.descr}: {param.val} {param.measurement}'
             text += MessageFormatter.escape_markdown(param_text)
