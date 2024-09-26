@@ -1,0 +1,40 @@
+services:
+  energoatlas-bot:
+    build:
+      context: bot
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      db_host: postgres
+      db_username: admin
+      db_password: 123
+      db_port: 5432
+      db_database: EnergoAtlasBot
+      bot_token: "specify-your-token"
+
+    depends_on:
+      - postgres
+
+  stub:
+    build:
+      context: stub
+      dockerfile: Dockerfile
+    ports:
+      - 8888:8888
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: admin
+      POSTGRES_DB: EnergoAtlasBot
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "{{ db_username }}", '-d', '{{ db_database }}']
+      interval: 3s
+
+volumes:
+  postgres-data:
