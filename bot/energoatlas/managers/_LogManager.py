@@ -1,6 +1,7 @@
 import asyncio
 from typing import Iterable
 
+import httpx
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy import select, func
 from loguru import logger
@@ -8,15 +9,17 @@ from httpx import HTTPError
 
 from energoatlas.models.background import DeviceWithLogs, DeviceDict, Device
 from energoatlas.tables import UserTable, UserDeviceTable, LogTable
-from energoatlas.managers import ApiManager, DbBaseManager, MessageFormatter
+from energoatlas.managers import ApiManager, DbBaseManager, MessageFormatter, UserManager
 from energoatlas.utils import yesterday, strip_log
 from energoatlas.settings import settings
 
 
 class LogManager(DbBaseManager):
-    def __init__(self, api_manager: ApiManager, engine: AsyncEngine = None, session: AsyncSession = None):
+    def __init__(self, api_manager: ApiManager, engine: AsyncEngine = None, session: AsyncSession = None,
+                 user_manager: UserManager = None):
         super().__init__(engine=engine, session=session)
         self.api_manager = api_manager
+        self.user_manager = user_manager
         self.admin_user = UserTable(login=settings.admin_login, password=settings.admin_password)
 
     async def request_logs_and_notify(self):
@@ -121,7 +124,7 @@ class LogManager(DbBaseManager):
                     user_devices[user_id] = []
                 user_devices[user_id].append(unit)
         coroutines = [self._send_notification_in_chat(id_, device) for id_, device in user_devices.items()]
-        await asyncio.gather(*coroutines)
+        await asyncio.gather(*coroutines, return_exceptions=True)
 
     async def _send_notification_in_chat(self, chat_id: int, device_logs: list[DeviceWithLogs]) -> None:
         """Отправить уведомление в один чат Telegram о срабатывании аварийных критериев на устройствах
@@ -129,7 +132,17 @@ class LogManager(DbBaseManager):
         :param device_logs: устройства (датчики) со списком срабатываний аварийных критериев
         """
         message_params = MessageFormatter.notification_message(device_logs)
-        await self.api_manager.send_telegram_message(chat_id, message_params)
+        try:
+            await self.api_manager.send_telegram_message(chat_id, message_params)
+        except httpx.HTTPStatusError as exc:
+            response = exc.response.json()
+            if all([
+                exc.response.status_code == 403,
+                isinstance(response, dict),
+                'bot was blocked by the user' in response.get('description', '')
+            ]):
+                await self.user_manager.unauthorize_user(chat_id, send_message=False)
+                await self.user_manager.session.commit()
 
     async def _get_tracked_devices(self, token: str) -> set[Device]:
         """Получить набор объектов Device, по которым проверяется история срабатываний аварийных критериев"""

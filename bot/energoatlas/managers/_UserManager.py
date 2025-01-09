@@ -70,10 +70,14 @@ class UserManager(DbBaseManager):
                 devices.update(iter(await self.api_manager.get_user_devices(token, company.id)))
             await self._set_devices_for_user(user, devices)
         else:
-            chat_id = user.telegram_user_id
-            state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=chat_id, user_id=user.telegram_user_id)
-            await state.clear()
+            await self.unauthorize_user(user.telegram_user_id)
+
+    async def unauthorize_user(self, chat_id: int, send_message: bool = True) -> None:
+        """Удалить пользователя из списка авторизованных"""
+        state = self.dispatcher.fsm.resolve_context(bot=self.bot, chat_id=chat_id, user_id=chat_id)
+        await state.clear()
+        if send_message:
             params = TelegramMessageParams(text=settings.need_authorize_message)
             await self.api_manager.send_telegram_message(chat_id=chat_id, message_params=params)
-            await self.remove_user(user.telegram_user_id)
-            logger.success(f'Удален пользователь с telegram_id {chat_id} из таблицы авторизованных пользователей')
+        await self.remove_user(chat_id)
+        logger.success(f'Удален пользователь с telegram_id {chat_id} из таблицы авторизованных пользователей')

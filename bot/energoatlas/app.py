@@ -40,14 +40,14 @@ async def on_startup(dispatcher: Dispatcher):
     _ = asyncio.create_task(run_scheduled_tasks(api_manager, dispatcher))
     logger.info('Started polling...')
     await bot.set_my_commands(settings.bot_commands)
-    await dispatcher.start_polling(bot, api_manager=api_manager)
+    await dispatcher.start_polling(bot, api_manager=api_manager, dispatcher=dispatcher, bot_instance=bot)
 
 
 async def run_scheduled_tasks(api_manager: ApiManager, dispatcher: Dispatcher):
     schedule = Scheduler()
 
     user_manager = UserManager(api_manager, bot=bot, dispatcher=dispatcher)
-    log_manager = LogManager(api_manager)
+    log_manager = LogManager(api_manager, user_manager=user_manager)
 
     schedule.every().day.do(user_manager.update_all_users)
     schedule.every().minute.do(log_manager.request_logs_and_notify)
@@ -57,7 +57,7 @@ async def run_scheduled_tasks(api_manager: ApiManager, dispatcher: Dispatcher):
     await schedule.run_all()
 
     while True:
-        await schedule.run_pending()
+        await schedule.run_pending(return_when='ALL_COMPLETED')
         await asyncio.sleep(1)
 
 

@@ -1,7 +1,7 @@
 from typing import Callable, Any, Awaitable
 
 import aiogram.exceptions
-from aiogram import BaseMiddleware
+from aiogram import BaseMiddleware, Dispatcher, Bot
 from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -27,8 +27,10 @@ class DependencyInjectionMiddleware(BaseMiddleware):
             data: dict[str, Any]
     ) -> Any:
         api_manager: ApiManager = data['api_manager']
+        dispatcher: Dispatcher = data['dispatcher']
+        bot: Bot = data['bot_instance']
         async with AsyncSessionMaker() as session:
-            user_manager = UserManager(api_manager, session=session)
+            user_manager = UserManager(api_manager, session=session, dispatcher=dispatcher, bot=bot)
             data['user_manager'] = user_manager
             await handler(event, data)
 
